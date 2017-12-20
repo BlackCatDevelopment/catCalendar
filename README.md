@@ -13,7 +13,7 @@ http://wiki.blackcat-cms.org/doku.php?id=addons:modules:multicolumn:module_varia
 - default
 
 ## Preferences
-BlackCat CMS 1.1
+BlackCat CMS 1.3
 
 ## License
 This module is distributed under the GPL.
