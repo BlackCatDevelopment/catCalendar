@@ -2,7 +2,7 @@ catCalendar for Black Cat CMS
 ===============================
 
 
-## NOTE: Working in progress
+## NOTE: This Add on is work in progress
 This is work in progress currently... Do not install ;-)
 
 This is an add on for Black Cat CMS.
