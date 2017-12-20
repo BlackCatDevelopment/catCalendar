@@ -1,6 +1,10 @@
 catCalendar for Black Cat CMS
 ===============================
 
+
+## NOTE: Working in progress
+This is work in progress currently... Do not install ;-)
+
 This is an add on for Black Cat CMS.
 An add on to integrate a calendar in BlackCat CMS
 
