@@ -48,12 +48,12 @@ $mod_headers = array(
 		'css' => array(
 			array(
 				'media'		=> 'all',
-				'file'		=> 'modules/cc_catgallery/css/default/backend.css'
+				'file'		=> 'modules/' . catCalendarObject::$directory  . '/css/default/backend.css'
 			)
 		),
 		'js' => array(
-			'/modules/cc_catgallery/js/default/dropzone.min.js',
-			'/modules/cc_catgallery/js/default/backend.js'
+			'/modules/' . catCalendarObject::$directory  . '/js/default/dropzone.min.js',
+			'/modules/' . catCalendarObject::$directory  . '/js/default/backend.js'
 		),
 		'jquery' => array(
 			array(
@@ -65,13 +65,11 @@ $mod_headers = array(
 		'css' => array(
 			array(
 				'media'		=> 'all',
-				'file'		=> 'modules/cc_catgallery/css/default/frontend.css'
+				'file'		=> 'modules/' . catCalendarObject::$directory  . '/css/default/frontend.css'
 			)
 		),
 		'js' => array(
-			'/modules/cc_catgallery/js/default/jquery.easing.1.3.js',
-			'/modules/cc_catgallery/js/default/jquery.skitter.min.js',
-			'/modules/cc_catgallery/js/default/frontend.js'
+			'/modules/' . catCalendarObject::$directory  . '/js/default/frontend.js'
 		),
 		'jquery' => array(
 			array(

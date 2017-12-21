@@ -42,17 +42,10 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-/*include_once "inc/class.catgallery.php";
+include_once "inc/class.catCalendarObject.php";
 
-$catCalendarObj		= new catCalendarObject();
+$catCalendar	= new catCalendarObject($section);
 
-$variant		= $catCalendarObj->getVariant();
+include_once $catCalendar->includeHeader();
 
-$module_path	= '/modules/cc_catgallery/';
-
-if ( file_exists( CAT_PATH . $module_path .'headers_inc/' . $variant . '/headers.inc.php' ) )
-	include( CAT_PATH . $module_path . 'headers_inc/' . $variant . '/headers.inc.php' );
-elseif ( file_exists( CAT_PATH . $module_path .'headers_inc/default/headers.inc.php' ) )
-	include( CAT_PATH . $module_path .'headers_inc/default/headers.inc.php' );
-*/
 ?>

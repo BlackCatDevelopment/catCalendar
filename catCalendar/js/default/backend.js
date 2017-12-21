@@ -67,8 +67,8 @@ $(document).ready(function()
 
 			$('#cc_dropzone_' + cGID.gallery_id).dropzone(
 			{
-				url:				CAT_URL + '/modules/cc_catgallery/save.php',
-				paramName:			'new_image',
+				url:				CAT_URL + '/modules/catCalendar/save.php',
+				paramName:			'new_event',
 				thumbnailWidth:		300,
 				thumbnailHeight:	200,
 				sending:			function(file, xhr, formData)
@@ -85,23 +85,23 @@ $(document).ready(function()
 				success:			function(file, xhr, formData)
 				{
 					// Unvollständigen Upload durch wechseln der Seite verhindern
-					if( $('.dz-preview').not('#catG___image_id__').find('.dz-progress').length == 0 ) catGalPU( false );
+					if( $('.dz-preview').not('#catG___event_id__').find('.dz-progress').length == 0 ) catGalPU( false );
 					console.log(file, xhr, formData);
 					var $newIMG	= $(file.previewElement),
 						xhr		= JSON.parse(xhr),
-						newID	= $newIMG.attr('id') + xhr.newIMG.image_id;
+						newID	= $newIMG.attr('id') + xhr.newIMG.event_id;
 			
 					$imgUL.sortable( 'refresh' );
 			
 					$newIMG.find('.dz-progress').remove();
 					$newIMG.find('.dz-filename span').text(xhr.newIMG.picture);
-					$newIMG.find('input[name=imgID]').val(xhr.newIMG.image_id);
-					$newIMG.find('.cc_catG_image img').attr('src',xhr.newIMG.thumb);
+					$newIMG.find('input[name=imgID]').val(xhr.newIMG.event_id);
+					$newIMG.find('.cc_catG_event img').attr('src',xhr.newIMG.thumb);
 					$newIMG.find('input, button, textarea').prop('disabled',false);
 					$newIMG.find('.cc_catG_disabled').removeClass('cc_catG_disabled');
 
 					$newIMG.html(function(index,html){
-						return html.replace(/__image_id__/g,xhr.newIMG.image_id);
+						return html.replace(/__event_id__/g,xhr.newIMG.event_id);
 					});
 
 					dialog_form( $newIMG.find('.ajaxForm') );
@@ -141,7 +141,7 @@ $(document).ready(function()
 					};
 				dialog_ajax(
 					'Bild veröffentlichen',
-					CAT_URL + '/modules/cc_catgallery/save.php',
+					CAT_URL + '/modules/catCalendar/save.php',
 					ajaxData,
 					'POST',
 					'JSON',
@@ -176,14 +176,14 @@ $(document).ready(function()
 				{
 					type:		'POST',
 					context:	$li,
-					url:		CAT_URL + '/modules/cc_catgallery/save.php',
+					url:		CAT_URL + '/modules/catCalendar/save.php',
 					dataType:	'JSON',
 					data:		ajaxData,
 					cache:		false,
 					beforeSend:	function( data )
 					{
 						// Set activity and store in a variable to use it later
-						data.process	= set_activity( 'Deleting image' );
+						data.process	= set_activity( 'Deleting event' );
 					},
 					success:	function( data, textStatus, jqXHR )
 					{
@@ -254,7 +254,7 @@ $(document).ready(function()
 					{
 						type:		'POST',
 						context:	$par,
-						url:		CAT_URL + '/modules/cc_catgallery/save.php',
+						url:		CAT_URL + '/modules/catCalendar/save.php',
 						dataType:	'JSON',
 						data:		ajaxData,
 						cache:		false,
@@ -269,7 +269,7 @@ $(document).ready(function()
 							{
 								$(this).addClass('fc_gradient1');
 								$WYSIWYG.fadeIn(400);
-								CKEDITOR.instances['wysiwyg_' + ajaxData.section_id].setData( data.image.image_content );
+								CKEDITOR.instances['wysiwyg_' + ajaxData.section_id].setData( data.event.event_content );
 								CKEDITOR.instances['wysiwyg_' + ajaxData.section_id].updateElement();
 								return_success( jqXHR.process , data.message );
 							}
@@ -331,7 +331,7 @@ $(document).ready(function()
 					$.ajax(
 					{
 						type:		'POST',
-						url:		CAT_URL + '/modules/cc_catgallery/save.php',
+						url:		CAT_URL + '/modules/catCalendar/save.php',
 						dataType:	'json',
 						data:		ajaxData,
 						cache:		false,

@@ -71,7 +71,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		private $summertime				= true;
 		private $events					= array();
 		protected $options				= array();
-		protected static $directory		= 'catCalendar';
+		public static $directory		= 'catCalendar';
 		protected $variant				= 'default';
 		protected static $allVariants	= array();
 		private static $CalObj			= NULL;
@@ -344,6 +344,22 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			header('Content-Disposition: attachment; filename="cal.ics"');
 
 			echo self::$CalObj->render();
+		}
+
+	
+		/**
+		 * include headers.inc.php
+		 *
+		 * @access public
+		 * @return string
+		 *
+		 **/
+		public function includeHeader()
+		{
+			if ( file_exists( CAT_PATH . '/modules/' . self::$directory .'/headers_inc/' . $this->getVariant() . '/headers.inc.php' ) )
+				return CAT_PATH . '/modules/' . self::$directory . '/headers_inc/' . $this->getVariant() . '/headers.inc.php';
+			elseif ( file_exists( CAT_PATH . '/modules/' . self::$directory .'/headers_inc/default/headers.inc.php' ) )
+				return CAT_PATH . '/modules/' . self::$directory .'/headers_inc/default/headers.inc.php';
 		}
 	}
 }
