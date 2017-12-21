@@ -42,6 +42,11 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
+if (!class_exists('catCalendarObject', false))
+{
+	@include dirname(__FILE__) . '/class.catCalendarObject.php';
+}
+
 if ( ! class_exists( 'catCalendarEvent', false ) ) {
 
 	class catCalendarEvent
@@ -68,7 +73,16 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 	
 		public function __construct($section_id = NULL)
 		{
-			// TODO: implement here
+			if ( $section_id === true )
+			{
+				self::initAdd();
+			}
+			# if no $section_id is given, try to get the global
+			if ( !$section_id
+				||!is_numeric($section_id)
+				) global $section_id;
+			
+			
 		}
 	
 		public function __destruct()

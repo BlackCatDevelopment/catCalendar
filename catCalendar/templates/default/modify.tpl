@@ -24,11 +24,11 @@
 
 {include(modify/javascript.tpl)}
 
-<div class="cc_catG_form" id="cc_catG_{$gallery_id}">
+<div class="cc_catG_form" id="cc_catG_{$section_id}">
 	{include(modify/set_skin.tpl)}
 	<div class="clear"></div>
 	<div class="cc_catG_settings">
-		<ul class="cc_catG_nav fc_br_left" id="cc_catG_nav_{$gallery_id}">
+		<ul class="cc_catG_nav fc_br_left" id="cc_catG_nav_{$section_id}">
 			<li class="active fc_br_topleft">{translate('Upload new images')}</li>
 			<li>{translate('Options for frontend')}</li>
 			<li class="fc_br_bottomleft">{translate('Image option')}</li>
@@ -42,7 +42,7 @@
 	</div>
 	<p class="catG_IMG_y">{translate('Existing images')}</p>
 	<p class="catG_IMG_n">{translate('No images available')}</p>
-	<ul id="cc_catG_imgs_{$gallery_id}" class="cc_catG_imgs">
+	<ul id="cc_catG_imgs_{$section_id}" class="cc_catG_imgs">
 		{foreach $images as image}
 		{include(modify/image.tpl)}
 		{/foreach}

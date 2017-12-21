@@ -42,23 +42,19 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-include_once "inc/class.catcalendar.php";
+include_once "inc/class.catCalendarObject.php";
 
-$catCalendar	= new catCalendar();
+$catCalendar	= new catCalendarObject();
 
 $parser_data	= array(
-	'folder_url'		=> $catCalendar->getFolder( false ),
 	'CAT_ADMIN_URL'		=> CAT_ADMIN_URL,
 	'CAT_URL'			=> CAT_URL,
 	'page_id'			=> $page_id,
 	'section_id'		=> $section_id,
-	'gallery_id'		=> $catCalendar->getID(),
 	'version'			=> CAT_Helper_Addons::getModuleVersion('catCalendar'),
+	'variant'			=> $catCalendar->getVariant(),
 	'module_variants'	=> $catCalendar->getAllVariants(),
-	'options'			=> $catCalendar->getOptions(),
-	'effects'			=> $catCalendar->effects,
-	'images'			=> $catCalendar->getImage(),
-	'catG_WYSIWYG'		=> 'wysiwyg_' . $section_id
+	'options'			=> $catCalendar->getOptions()
 );
 
 $module_path	= '/modules/catCalendar/';

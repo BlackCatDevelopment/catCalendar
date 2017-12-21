@@ -45,11 +45,12 @@ if (defined('CAT_PATH')) {
 
 global $section_id, $page_id;
 
-include_once "inc/class.catgallery.php";
 
-$catGallery	= new catGallery();
+include_once "inc/class.catCalendarObject.php";
 
-$catGallery->deleteGallery();
+$catCalendarObj	= new catCalendarObject();
+
+$catCalendarObj->remove();
 
 
 ?>

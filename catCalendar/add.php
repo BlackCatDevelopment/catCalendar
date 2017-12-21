@@ -43,9 +43,9 @@ if (defined('CAT_PATH')) {
 // end include class.secure.php
 
 
-include_once "inc/class.catgallery.php";
+include_once "inc/class.catCalendarObject.php";
 
-$catGallery	= new catGallery( true );
+$catCalendarObj	= new catCalendarObject( true );
 
 
 ?>

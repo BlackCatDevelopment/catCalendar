@@ -16,7 +16,6 @@ DROP TABLE IF EXISTS
 
 CREATE TABLE `:prefix:mod_catCalendar` (
 	`section_id` INT(11) NOT NULL DEFAULT 0,
-	`variant` VARCHAR(255) NOT NULL DEFAULT 'default',
 	`calURL` VARCHAR(255) NOT NULL DEFAULT '',
 	`TZID` VARCHAR(31) NOT NULL DEFAULT '',
 	`summertime` TINYINT(1) NOT NULL DEFAULT '',
