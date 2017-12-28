@@ -64,6 +64,16 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 
 	class catCalendarObject
 	{
+		public static $directory		= 'catCalendar';
+		public static $name				= 'catCalendar';
+		public static $version			= '0.1';
+		public static $plattform		= '1.1.x';
+		public static $function			= 'page';
+		public static $author			= 'Matthias Glienke, creativecat.de';
+		public static $license			= '<a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</a>';
+		public static $description		= 'The add on "catCalendar" provides a simple way to integrate a calendar on your website. For details see <a href="https://github.com/BlackCatDevelopment/catCalendar_for_BlackCatCMS" target="_blank">GitHub</a>.<br/><br/>Done by Matthias Glienke, <a class="icon-creativecat" href="http://creativecat.de"> creativecat</a>';
+		public static $guid				= '993b7c91-7bec-455f-9fdf-3313c0fbd3f7';
+
 		private $section_id				= NULL;
 		private static $instance		= NULL;
 		private $calURL					= NULL;
@@ -71,7 +81,6 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		private $summertime				= true;
 		private $events					= array();
 		protected $options				= array();
-		public static $directory		= 'catCalendar';
 		protected $variant				= 'default';
 		protected static $allVariants	= array();
 		private static $CalObj			= NULL;

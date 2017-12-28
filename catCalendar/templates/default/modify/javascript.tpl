@@ -23,14 +23,12 @@
  *}
 
 <script type="text/javascript">
-	if (typeof catGalIDs === 'undefined')
+	if (typeof catCalIDs === 'undefined')
 	\{
-		catGalIDs	= [];
+		catCalIDs	= [];
 	}
-	catGalIDs.push(
+	catCalIDs.push(
 	\{
-		'page_id'		: {$page_id},
-		'section_id'	: {$section_id},
-		'gallery_id'	: {$gallery_id}
+		'section_id'	: {$section_id}
 	});
 </script>

@@ -42,18 +42,18 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
+include_once "inc/class.catCalendarObject.php";
 
-$module_directory		= 'catCalendar';
-$module_name			= 'catCalendar';
-$module_function		= 'page';
-$module_version			= '2.1';
-$module_platform		= '1.1.x';
-$module_author			= 'Matthias Glienke, creativecat.de';
-$module_license			= '<a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</a>';
-$module_description		= 'The add on "catCalendar" provides a simple way to integrate a calendar on your website. For details see <a href="https://github.com/BlackCatDevelopment/catCalendar_for_BlackCatCMS" target="_blank">GitHub</a>.<br/><br/>Done by Matthias Glienke, <a class="icon-creativecat" href="http://creativecat.de"> creativecat</a>';
-$module_guid			= '993b7c91-7bec-455f-9fdf-3313c0fbd3f7';
-$module_variants		= array(
-	0	=> 'default'
-);
+$module_directory		= catCalendarObject::$directory;
+$module_name			= catCalendarObject::$name;
+$module_function		= catCalendarObject::$function;
+$module_version			= catCalendarObject::$version;
+
+$module_platform		= catCalendarObject::$plattform;
+$module_author			= catCalendarObject::$author;
+$module_license			= catCalendarObject::$license;
+$module_description		= catCalendarObject::$description;
+$module_guid			= catCalendarObject::$guid;
+$module_variants		= catCalendarObject::getAllVariants();
 
 ?>

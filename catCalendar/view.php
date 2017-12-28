@@ -1,7 +1,7 @@
 <?php
 /**
  *
- *   This program is free software; you can redistribute it and/or modify
+ *   This program is free software; you can redistribute it and/or view
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 3 of the License, or (at
  *   your option) any later version.
@@ -42,36 +42,24 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-include_once "inc/class.catgallery.php";
+include_once "inc/class.catCalendarObject.php";
 
-$catGallery	= new catGallery();
+$catCalendar	= new catCalendarObject();
+
 
 $parser_data	= array(
-	'folder_url'		=> $catGallery->getFolder( false ),
 	'CAT_ADMIN_URL'		=> CAT_ADMIN_URL,
 	'CAT_URL'			=> CAT_URL,
 	'page_id'			=> $page_id,
 	'section_id'		=> $section_id,
-	'gallery_id'		=> $catGallery->getID(),
-	'version'			=> CAT_Helper_Addons::getModuleVersion('cc_catgallery'),
-	'module_variants'	=> $catGallery->getAllVariants(),
-	'options'			=> $catGallery->getOptions(),
-	'effects'			=> $catGallery->effects,
-	'images'			=> $catGallery->getImage(),
-	'countImg'			=> $catGallery->countImg(),
-	'imgURL'			=> $catGallery->getImageURL(),
+	'version'			=> CAT_Helper_Addons::getModuleVersion('catCalendar'),
+	'variant'			=> $catCalendar->getVariant(),
+	'module_variants'	=> $catCalendar->getAllVariants(),
+	'options'			=> $catCalendar->getOptions(),
 	'page_link'			=> CAT_Helper_Page::getInstance()->properties( $page_id, 'link' ),
 	'section_name'		=> str_replace( array('ä', 'ö', 'ü', 'ß'), array('ae', 'oe', 'ue', 'ss'), strtolower( $section['name'] ) )
 );
 
-if ( $parser_data['countImg'] > 0 )
-	$template		= 'view';
-else
-	$template		= 'view_no_image';
-
-$module_path	= '/modules/cc_catgallery/';
-
-$variant		= $catGallery->getVariant();
 
 if ( file_exists( CAT_PATH . '/modules/lib_mdetect/mdetect/mdetect.php' ) )
 {
@@ -85,16 +73,24 @@ if ( file_exists( CAT_PATH . '/modules/lib_mdetect/mdetect/mdetect.php' ) )
 	$parser_data['options']['is_mobile']	= NULL;
 }
 
-if ( file_exists( CAT_PATH . $module_path .'view/' . $variant . '/view.php' ) )
-	include( CAT_PATH . $module_path .'view/' . $variant . '/view.php' );
-elseif ( file_exists( CAT_PATH . $module_path .'view/default/view.php' ) )
-	include( CAT_PATH . $module_path .'view/default/view.php' );
+$viewPHPpath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/view/';
 
-$parser->setPath( dirname(__FILE__) . '/templates/' . $catGallery->getVariant() );
-$parser->setFallbackPath( dirname( __FILE__ ) . '/templates/default' );
+if ( file_exists( $viewPHPpath . $catCalendar->getVariant() . '/view.php' ) )
+	include( $viewPHPpath . $catCalendar->getVariant() . '/view.php' );
+elseif ( file_exists( $viewPHPpath . 'default/view.php' ) )
+	include( $viewPHPpath . 'default/view.php' );
+
+$templatePath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/templates/';
+
+if ( file_exists( $templatePath . $catCalendar->getVariant() . '/view.tpl' ) )
+	$parser->setPath( $templatePath . $catCalendar->getVariant() );
+elseif ( file_exists( $templatePath . 'default/view.tpl' ) )
+	$parser->setPath( $templatePath . 'default/' );
+
+$parser->setFallbackPath( $templatePath . 'default/' );
 
 $parser->output(
-	$template,
+	'view',
 	$parser_data
 );
 

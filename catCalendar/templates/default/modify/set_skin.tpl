@@ -21,19 +21,18 @@
  *   @package			catCalendar
  *
  *}
-<div class="cc_catG_skin fc_br_top">
+<div class="catCal_skin fc_br_top">
 	<p class="icon-cog cc_toggle_set"> {translate('Set skin')} <small>({$variant})</small></p>
-	<form action="{$CAT_URL}/modules/cc_catgallery/save.php" method="post" class="fc_gradient1 fc_border_all_light fc_br_bottom fc_shadow_small">
-		<input type="hidden" name="page_id" value="{$page_id}" />
-		<input type="hidden" name="section_id" value="{$section_id}" />
-		<input type="hidden" name="gallery_id" value="{$gallery_id}" />
-		<input type="hidden" name="options" value="variant" />
+	<form action="{$CAT_URL}/modules/catCalendar/save.php" method="post" class="fc_gradient1 fc_border_all_light fc_br_bottom fc_shadow_small">
+		<input type="hidden" name="page_id" value="{$page_id}">
+		<input type="hidden" name="section_id" value="{$section_id}">
+		<input type="hidden" name="options" value="variant">
 		<select name="variant">
 		{foreach $module_variants variants}
 			<option value="{$variants}"{if $variants == $options.variant} selected="selected"{/if}>{$variants}</option>
 		{/foreach}
 		</select><br/>
-		<input type="submit" name="speichern" value="{translate('Save skin &amp; reload')}" /><br/>
-		<input type="reset" name="reset" value="{translate('Close')}" />
+		<input type="submit" name="speichern" value="{translate('Save skin &amp; reload')}"><br/>
+		<input type="reset" name="reset" value="{translate('Close')}">
 	</form>
 </div>

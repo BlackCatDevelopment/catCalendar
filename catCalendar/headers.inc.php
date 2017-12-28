@@ -42,7 +42,7 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-include_once "inc/class.catCalendarObject.php";
+require_once "inc/class.catCalendarObject.php";
 
 $catCalendar	= new catCalendarObject($section);
 

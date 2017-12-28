@@ -24,31 +24,43 @@
 
 {include(modify/javascript.tpl)}
 
-<div class="cc_catG_form" id="cc_catG_{$section_id}">
+<div class="catCal_form" id="catCal_{$section_id}">
 	{include(modify/set_skin.tpl)}
-	<div class="clear"></div>
-	<div class="cc_catG_settings">
-		<ul class="cc_catG_nav fc_br_left" id="cc_catG_nav_{$section_id}">
-			<li class="active fc_br_topleft">{translate('Upload new events')}</li>
-			<li>{translate('Options for frontend')}</li>
-			<li class="fc_br_bottomleft">{translate('Event option')}</li>
-		</ul>
-		<ul class="cc_catG_tabs fc_br_right">
-			<li class="cc_catG_tab active">{include(modify/set_dropzone.tpl)}</li>
-			<li class="cc_catG_tab">{include(modify/set_frontend.tpl)}</li>
-			<li class="cc_catG_tab">{include(modify/set_event.tpl)}</li>
-		</ul>
-		<div class="clear"></div>
+	{include(modify/add_event.tpl)}
+	{include(modify/set_general.tpl)}
+	<div class="catCal_wrapper">
+		<nav>
+			<ol>
+				<li>
+					<dl>
+						<dt>27.12.2017</dt>
+						<dd class="cal_1">Ampelgespräche Abschlussschüler <span>13:30 - 14:00</span></dd>
+						<dd class="cal_1">Frank Unterrichtsbesuch Mirjam <span>13:30 - 14:00</span></dd>
+						<dd class="cal_1">Kino mit der Klasse <span>13:30 - 14:00</span></dd>
+					</dl>
+					<dl>
+						<dt>28.12.2017</dt>
+						<dd class="cal_1">SAD EVA Teamtreffen <span>13:30 - 14:00</span></dd>
+					</dl>
+				{*foreach $events as event}
+				{include(modify/event.tpl)}
+				{/foreach}
+				{$event = NULL}
+				{include(modify/event.tpl)*}
+				<li>
+			</ol>
+			<div class="catCal_cals">
+				<span class="icon-menu"> {translate('All calendars')}</span>
+				<ul>
+					<li>{translate('All calendars')}</li>
+					{*foreach *}<li>Privat</li>{*/foreach*}
+					{*foreach *}<li>Lorem ipsum</li>{*/foreach*}
+				</ul>
+			</div>
+		</nav>
+		{include(modify/event.tpl)}
 	</div>
-	<p class="catG_IMG_y">{translate('Existing events')}</p>
-	<p class="catG_IMG_n">{translate('No events available')}</p>
-	<ul id="cc_catG_imgs_{$section_id}" class="cc_catG_imgs">
-		{foreach $events as event}
-		{include(modify/event.tpl)}
-		{/foreach}
-		{$event = NULL}
-		{include(modify/event.tpl)}
-	</ul>
+	<aside><small>Modulversion: {$version}</small></aside>
 </div>
 
-{include(modify/wysiwyg.tpl)}
+{*include(modify/wysiwyg.tpl)*}

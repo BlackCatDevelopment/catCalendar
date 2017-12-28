@@ -25,33 +25,17 @@
 <script type="text/javascript">
 	$(document).ready( function()
 	\{
-		$("#slider_skitter_{$section_id}").skitter(
-		\{
-			{if $options.effect}animation:		"{$options.effect}",{/if}
-			interval:		{if $pauseTime}{$pauseTime}{else}4000{/if},
-			stop_over:		false,
-			navigation:		false,
-			numbers:		false,
-			{if $options.label}
-			label:			true,
-			width_label:	"{$options.label}px"
-			{else}
-			label:			false
-			{/if}
-		});
 	});
 </script>
 {/if}
 
-<div class="slider_skitter" id="slider_skitter_{$section_id}" style="width: {$options.resize_x}px; height: {$options.resize_y}px;">
-	<ul>
-		{foreach $images as image}{if $image.published}
-		<li>
-			<a href="#"><img src="{$imgURL}{$image.picture}" width="{$options.resize_x}" height="{$options.resize_y}" alt="{$image.options.alt}" /></a>
-			{if $options.label && $image.image_content != ''}<div class="label_text">
-				{$image.image_content}
+<section class="catCalendar" id="catCalendar_{$section_id}">
+	{foreach $events as image}{if $event.published}
+	<article>
+			<a href="#"><img src="{$imgURL}{$event.picture}" width="{$options.resize_x}" height="{$options.resize_y}" alt="{$event.options.alt}" /></a>
+			{if $options.label && $event.image_content != ''}<div class="label_text">
+				{$event.image_content}
 			</div>{/if}
-		</li>
-		{/if}{/foreach}
-	</ul>
-</div>
+	</article>
+	{/if}{/foreach}
+</section>

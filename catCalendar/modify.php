@@ -57,19 +57,22 @@ $parser_data	= array(
 	'options'			=> $catCalendar->getOptions()
 );
 
-$module_path	= '/modules/catCalendar/';
 
-if ( file_exists( CAT_PATH . $module_path .'modify/' . $catCalendar->getVariant() . '/modify.php' ) )
-	include( CAT_PATH . $module_path .'modify/' . $catCalendar->getVariant() . '/modify.php' );
-elseif ( file_exists( CAT_PATH . $module_path .'modify/default/modify.php' ) )
-	include( CAT_PATH . $module_path .'modify/default/modify.php' );
+$modifyPHPpath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/modify/';
 
-if ( file_exists( CAT_PATH . $module_path .'templates/' . $catCalendar->getVariant() . '/modify.tpl' ) )
-	$parser->setPath( dirname(__FILE__) . '/templates/' . $catCalendar->getVariant() );
-elseif ( file_exists( CAT_PATH . $module_path .'templates/default/modify.tpl' ) )
-	$parser->setPath( dirname(__FILE__) . '/templates/default/' );
+if ( file_exists( $modifyPHPpath . $catCalendar->getVariant() . '/modify.php' ) )
+	include( $modifyPHPpath . $catCalendar->getVariant() . '/modify.php' );
+elseif ( file_exists( $modifyPHPpath . 'default/modify.php' ) )
+	include( $modifyPHPpath . 'default/modify.php' );
 
-$parser->setFallbackPath( dirname( __FILE__ ) . '/templates/default' );
+$templatePath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/templates/';
+
+if ( file_exists( $templatePath . $catCalendar->getVariant() . '/modify.tpl' ) )
+	$parser->setPath( $templatePath . $catCalendar->getVariant() );
+elseif ( file_exists( $templatePath . 'default/modify.tpl' ) )
+	$parser->setPath( $templatePath . 'default/' );
+
+$parser->setFallbackPath( $templatePath . 'default/' );
 
 $parser->output(
 	'modify',
