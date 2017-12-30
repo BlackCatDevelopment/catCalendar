@@ -60,13 +60,13 @@ if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric
 	// ====================================== 
 	switch ( $action )
 	{
-		case 'getEvent':
-			$success	= $catCalendar->getEvent( $eventID );
+		case 'getEvents':
+			$success		= $catCalendar->getAllEvents( $calID != -1 ? $calID : NULL, true );
 
 			$ajax_return	= array(
-				'message'	=> $lang->translate( 'Image uploaded successfully!' ),
-				'newIMG'	=> $success,
-				'success'	=> is_array($success) ? true : false
+				'message'	=> $lang->translate( 'Calendar loaded successfully' ),
+				'events'	=> $success,
+				'success'	=> $success ? true : false
 			);
 			break;
 		case 'saveOptions':

@@ -125,15 +125,50 @@ $(document).ready(function()
 			$catCals.on(
 				'click', 'li', function()
 			{
-				console.log($(this).data('calid'));
-				/*
-				var $curr	= $(this),
-					cur_ind	= $curr.index(),
-					$nav	= $curr.closest('ul'),
-					$tabs	= $nav.next('ul'),
-					$currT	= $tabs.children('li').eq(cur_ind);
-				$nav.children('li').removeClass('active').filter($curr).addClass('active');
-				$tabs.children('li').removeClass('active').filter($currT).addClass('active');*/
+				var	$cur		= $(this),
+					ajaxData	= {
+						page_id		: cCID.page_id,
+						section_id	: cCID.section_id,
+						calid		: $cur.data('calid'),
+						action		: 'getEvents',
+						_cat_ajax	: 1
+					};
+
+				$.ajax(
+				{
+					type:		'POST',
+					context:	$cur,
+					url:		CAT_URL + '/modules/catCalendar/save.php',
+					dataType:	'JSON',
+					data:		ajaxData,
+					cache:		false,
+					beforeSend:	function( data )
+					{
+						// Set activity and store in a variable to use it later
+						data.process	= set_activity( 'Getting calendar' );
+					},
+					success:	function( data, textStatus, jqXHR )
+					{
+						if ( data.success === true )
+						{
+							return_success( jqXHR.process , data.message );
+							console.log(data);
+							$catEvents.html(data.events);
+							var $cur	= $(this);
+
+
+						}
+						else {
+							// return error
+							return_error( jqXHR.process , data.message );
+						}
+					},
+					error:		function( data, textStatus, jqXHR )
+					{
+						console.log( data, textStatus, jqXHR );
+						return_error( jqXHR.process , data.message );
+					}
+				});
 			});
 		});
 	}

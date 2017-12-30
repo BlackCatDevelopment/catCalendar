@@ -326,17 +326,23 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			return $this->calendars;
 		}
 
-		public function getAllEvents()
+		public function getAllEvents( $calID = NULL, $output = NULL )
 		{
 			if ( !$this->getSectionID() ) return false;
 
 			$this->events	= array();
 
+			if( is_array($calID) )
+				$sqlAdd	= '';
+			elseif( is_numeric($calID) )
+				$sqlAdd	= ' = ' . intval( $calID );
+			else $sqlAdd	= 'IN (SELECT `calID` FROM `:prefix:mod_catCalendar` WHERE `section_id` = :secID)';
+
 			$getEvents	= CAT_Helper_Page::getInstance()->db()->query(
 				'SELECT *, day(start) AS sD, month(start) AS sM, year(start) AS sY FROM `:prefix:mod_catCalendar_events` ' .
-					'WHERE `calID` IN ' .
-						'(SELECT `calID` FROM `:prefix:mod_catCalendar` WHERE `section_id` = :secID)' . 
-					'ORDER BY year(start), month(start), day(start)',
+					'WHERE `calID` ' . 
+					$sqlAdd .
+					' ORDER BY year(start), month(start), day(start)',
 				array(
 					'secID'	=> $this->getSectionID()
 				)
@@ -372,9 +378,35 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 					);
 				}
 			}
-			return $this->events;
+			if ($output) return $this->getEventsList();
+			else return $this->events;
 		}
-	
+
+		private function getEventsList()
+		{
+			global $parser;
+			$templatePath	= CAT_PATH . '/modules/' . self::$directory .'/templates/';
+			
+			if ( file_exists( $templatePath . $this->getVariant() . '/listEvent.tpl' ) )
+				$parser->setPath( $templatePath . $this->getVariant() );
+			elseif ( file_exists( $templatePath . 'default/listEvent.tpl' ) )
+				$parser->setPath( $templatePath . 'default/' );
+			
+			$parser->setFallbackPath( $templatePath . 'default/' );
+
+			$return	= '';
+			foreach ($this->events as $date => $events)
+			{
+				$data	= array(
+					'date'		=> $date,
+					'events'	=> $events
+				);
+				$return	.= $parser->get( 'listEvent', $data );
+			}
+
+			return $return;
+		}
+
 		private function getSummerTime()
 		{
 			// TODO: implement here

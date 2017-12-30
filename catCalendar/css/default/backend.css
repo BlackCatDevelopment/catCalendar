@@ -157,7 +157,13 @@
 		flex:				1 0 200px;
 		border-right:		1px solid #d8dbdd;
 	}
+	.catCalEvents {
+		height:		32em;
+		margin:		0 0 2.5em 0;
+		overflow-y:	auto;
+	}
 	.catCal_wrapper > form {
+		height:				32em;
 		-webkit-box-flex:	1;
 		-webkit-flex:		1 0 50%;
 		-ms-flex:			1 0 50%;
@@ -198,7 +204,7 @@
 				height:						.5em;
 				width:						.5em;
 				position:					absolute;
-				top:						.55em;
+				top:						.6em;
 				left:						1em;
 				-webkit-border-radius:		50%;
 				-moz-border-radius:			50%;
