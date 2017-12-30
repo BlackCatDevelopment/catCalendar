@@ -50,89 +50,27 @@ if ( CAT_Helper_Page::getPagePermission( $page_id, 'admin' ) !== true )
 // ============================= 
 // ! Get the current gallery_id 
 // ============================= 
-if ( $gallery_id = $val->sanitizePost( 'gallery_id','numeric' ) )
+
+$action		= CAT_Helper_Validate::getInstance()->sanitizePost( 'action' );
+
+if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric' ) )
 {
-	$imgID	= $val->sanitizePost( 'imgID','numeric' );
-	$action	= $val->sanitizePost( 'action' );
 	// ====================================== 
 	// ! Upload images and save to database
 	// ====================================== 
 	switch ( $action )
 	{
-		case 'uploadIMG':
-			if ( isset( $_FILES['new_image']['name'] ) && $_FILES['new_image']['name'] != '' )
-			{
-				$success	= $catGallery->saveImages( $_FILES );
-
-				$ajax_return	= array(
-					'message'	=> $lang->translate( 'Image uploaded successfully!' ),
-					'newIMG'	=> $success,
-					'success'	=> is_array($success) ? true : false
-				);
-			} else {
-				$ajax_return	= array(
-					'message'	=> $lang->translate( 'No images to upload' ),
-					'success'	=> false
-				);
-			}
-			break;
-		case 'removeIMG':
-			$deleted	= $catGallery->removeImage( $imgID );
-			$ajax_return	= array(
-				'message'	=> $deleted === true
-					? $lang->translate( 'Image deleted successfully!' )
-					: $lang->translate( 'An error occoured!' ),
-				'success'	=> $deleted
-			);
-			break;
-		case 'getContent':
-			$ajax_return	= array(
-				'image'		=> $catGallery->getImage( $imgID ),
-				'message'	=> $lang->translate( 'Content loaded' ),
-				'success'	=> true
-			);
-			break;
-		case 'saveContent':
-			$catGallery->saveContent( $imgID, $val->sanitizePost('wysiwyg_' . $section_id, false, true  ) );
-			$ajax_return	= array(
-				'message'	=> $lang->translate( 'Content saved successfully' ),
-				'success'	=> true
-			);
-			break;
-		case 'saveIMG':
-			$image_options	= $val->sanitizePost('image_options');
-			// =========================== 
-			// ! save options for images   
-			// =========================== 
-			if ( $image_options != '' )
-			{
-				foreach( array_filter( explode(',', $image_options) ) as $option )
-				{
-					if( !$catGallery->saveImgOptions( $imgID, $option, $val->sanitizePost( $option ) ) )
-						$error = true;
-				}
-			}
+		case 'getEvent':
+			$success	= $catCalendar->getEvent( $eventID );
 
 			$ajax_return	= array(
-				'message'	=> $lang->translate( 'Image saved successfully' ),
-				'success'	=> true
-			);
-			break;
-		case 'reorder':
-			// =========================== 
-			// ! save options for images   
-			// =========================== 
-			$success	= $catGallery->reorderImg( $val->sanitizePost('positions') );
-
-			$ajax_return	= array(
-				'message'	=> $success === true ?
-						$lang->translate( 'Image reordered successfully' )
-						: $lang->translate( 'Reorder failed' ),
-				'success'	=> $success
+				'message'	=> $lang->translate( 'Image uploaded successfully!' ),
+				'newIMG'	=> $success,
+				'success'	=> is_array($success) ? true : false
 			);
 			break;
 		case 'saveOptions':
-			$options		= $val->sanitizePost('options');
+			$options		= CAT_Helper_Validate::getInstance()->sanitizePost('options');
 
 			// =========================== 
 			// ! save options for gallery   
@@ -141,7 +79,7 @@ if ( $gallery_id = $val->sanitizePost( 'gallery_id','numeric' ) )
 			{
 				foreach( array_filter( explode(',', $options) ) as $option )
 				{
-					if( !$catGallery->saveOptions( $option, $val->sanitizePost( $option ) )) $error = true;
+					if( !$catCalendar->saveOptions( $option, CAT_Helper_Validate::getInstance()->sanitizePost( $option ) )) $error = true;
 				}
 			}
 			$ajax_return	= array(
@@ -153,7 +91,7 @@ if ( $gallery_id = $val->sanitizePost( 'gallery_id','numeric' ) )
 			// =========================== 
 			// ! save options for gallery   
 			// =========================== 
-			$success		= $catGallery->publishImg( $imgID );
+			$success		= $catCalendar->publishImg( $imgID );
 			$ajax_return	= array(
 				'message'	=> $success	? $lang->translate( 'Image published successfully!' ) : $lang->translate( 'Image unpublished successfully!' ),
 				'published'	=> $success,
@@ -164,7 +102,34 @@ if ( $gallery_id = $val->sanitizePost( 'gallery_id','numeric' ) )
 			// =========================== 
 			// ! save variant of images   
 			// =========================== 
-			$catGallery->saveOptions( 'variant', $val->sanitizePost('variant') );
+			$catCalendar->saveOptions( 'variant', CAT_Helper_Validate::getInstance()->sanitizePost('variant') );
+
+			$ajax_return	= array(
+				'message'	=> $lang->translate( 'Variant saved successfully!' ),
+				'success'	=> true
+			);
+
+			break;
+	}
+} elseif ( $eventID = CAT_Helper_Validate::getInstance()->sanitizePost( 'eventid','numeric' ) )
+{
+	$catCalEvent	= new catCalendarEvent($eventID);
+
+	switch ( $action )
+	{
+		case 'getEvent':
+			$success		=  $catCalEvent->getEvent();
+			$ajax_return	= array(
+				'message'	=> $lang->translate( 'Got event!' ),
+				'event'		=> $success,
+				'success'	=> is_array($success) && count($success) > 0 ? true : false
+			);
+			break;
+		default:
+			// =========================== 
+			// ! save variant of images   
+			// =========================== 
+			$catCalendar->saveOptions( 'variant', CAT_Helper_Validate::getInstance()->sanitizePost('variant') );
 
 			$ajax_return	= array(
 				'message'	=> $lang->translate( 'Variant saved successfully!' ),

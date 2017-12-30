@@ -42,7 +42,7 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-include_once "inc/class.catCalendarObject.php";
+require_once "inc/class.catCalendarObject.php";
 
 $catCalendar	= new catCalendarObject();
 
@@ -53,19 +53,20 @@ $parser_data	= array(
 	'section_id'		=> $section_id,
 	'version'			=> CAT_Helper_Addons::getModuleVersion('catCalendar'),
 	'variant'			=> $catCalendar->getVariant(),
-	'module_variants'	=> $catCalendar->getAllVariants(),
-	'options'			=> $catCalendar->getOptions()
+	'module_variants'	=> catCalendarObject::getAllVariants(),
+	'options'			=> $catCalendar->getOption(),
+	'dates'				=> $catCalendar->getAllEvents(),
+	'calendars'			=> $catCalendar->getCalendar()
 );
 
-
-$modifyPHPpath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/modify/';
+$modifyPHPpath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/modify/';
 
 if ( file_exists( $modifyPHPpath . $catCalendar->getVariant() . '/modify.php' ) )
 	include( $modifyPHPpath . $catCalendar->getVariant() . '/modify.php' );
 elseif ( file_exists( $modifyPHPpath . 'default/modify.php' ) )
 	include( $modifyPHPpath . 'default/modify.php' );
 
-$templatePath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/templates/';
+$templatePath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/templates/';
 
 if ( file_exists( $templatePath . $catCalendar->getVariant() . '/modify.tpl' ) )
 	$parser->setPath( $templatePath . $catCalendar->getVariant() );

@@ -31,77 +31,35 @@ $(document).ready(function()
 		$.each( catCalIDs, function( index, cCID )
 		{
 			var $catCal		= $('#catCal_' + cCID.section_id),
-				$imgUL		= $catCal.children('#catCal_imgs_'  + cCID.section_id),
-				$WYSIWYG	= $('#catG_WYSIWYG_' + cCID.section_id),
-				$catNav		= $('#catCal_nav_' + cCID.section_id);
+				$form		= $catCal.find('#catCalFrom_' + cCID.section_id),
+				$catEvents	= $catCal.find('#catCalEvents_' + cCID.section_id),
+				$catCals	= $catCal.find('#catCal_cals_' + cCID.section_id),
+				$creatUser	= $('#cC_User_' + cCID.section_id),
+				$creatTime	= $('#cC_Created_' + cCID.section_id);
 
-				
+
 			$catCal.find('.cc_toggle_set').next('form').hide();
 			$catCal.find('.cc_toggle_set, .catCal_skin input:reset').unbind().click(function()
 			{
 				$(this).closest('.catCal_skin').children('form').slideToggle(200);
 			});
-		
-			/**/
-			$imgUL.on( 'click',
-				'.icon-remove',
-			function()
-			{
-				$(this).closest('div').children('p').slideToggle(100);
-			});
 
-			$imgUL.on( 'click',
-				'.cG_publish',
-			function()
-			{
-				var $cur		= $(this),
-					$li			= $cur.closest('li'),
-					$inputs		= $li.find('input'),
-					ajaxData	= {
-						page_id		: cCID.page_id,
-						section_id	: cCID.section_id,
-						gallery_id	: cCID.section_id,
-						imgID		: $inputs.filter('input[name=imgID]').val(),
-						action		: 'publishIMG',
-						_cat_ajax	: 1
-					};
-				dialog_ajax(
-					'Bild veröffentlichen',
-					CAT_URL + '/modules/catCalendar/save.php',
-					ajaxData,
-					'POST',
-					'JSON',
-					false, function(data)
-					{
-						if( data.published == 1 )
-							$cur.addClass('active');
-						else
-							$cur.removeClass('active');
-					}, $cur
-				);
-			});
-
-
-			$imgUL.on( 'click',
-				'.catCal_del_conf',
-			function()
+			$catEvents.on(
+				'click', 'dd', function()
 			{
 				var	$cur		= $(this),
-					$li			= $cur.closest('li'),
-					$inputs		= $li.find('input'),
 					ajaxData	= {
 						page_id		: cCID.page_id,
 						section_id	: cCID.section_id,
-						gallery_id	: cCID.section_id,
-						imgID		: $inputs.filter('input[name=imgID]').val(),
-						action		: 'removeIMG',
+						eventid		: $cur.data('eventid'),
+						action		: 'getEvent',
 						_cat_ajax	: 1
 					};
 			
 				$.ajax(
 				{
 					type:		'POST',
-					context:	$li,
+					context:	$cur,
 					url:		CAT_URL + '/modules/catCalendar/save.php',
 					dataType:	'JSON',
 					data:		ajaxData,
@@ -109,17 +67,40 @@ $(document).ready(function()
 					beforeSend:	function( data )
 					{
 						// Set activity and store in a variable to use it later
-						data.process	= set_activity( 'Deleting event' );
+						data.process	= set_activity( 'Getting event' );
 					},
 					success:	function( data, textStatus, jqXHR )
 					{
 						if ( data.success === true )
 						{
-							$(this).slideUp(300,function(){
-								$(this).remove();
-								ceckIMG( $imgUL );
-							});
 							return_success( jqXHR.process , data.message );
+
+							var $cur	= $(this);
+							$form.data('eventid',$cur.data('eventid'));
+							$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');
+
+							$creatUser.html(data.event.createdID);
+							$creatTime.html(data.event.timestampDate + ' um ' + data.event.timestampTime);
+
+							$.each( data.event, function(k,v)
+							{
+								var $i	= $form.find('input[name="'+k+'"], select[name="'+k+'"], textarea[name="'+k+'"]');
+								switch($i.attr('type'))
+								{
+									case 'select':
+										$i.children('option').prop('selected', false);
+										$i.children('option[value="'+v+'"]').prop('selected', true);
+										break;
+									case 'radio':
+										/*$i.prop('checked',v ? true : false);*/
+										break;
+									case 'checkbox':
+										$i.prop('checked', v == 1 ? true : false );
+										break;
+									default:
+										$i.val(v);
+								}
+							});
 						}
 						else {
 							// return error
@@ -128,110 +109,31 @@ $(document).ready(function()
 					},
 					error:		function( data, textStatus, jqXHR )
 					{
+						console.log( data, textStatus, jqXHR );
 						return_error( jqXHR.process , data.message );
 					}
 				});
 			});
-		
-			$imgUL.on( 'click',
-				'.catCal_del_res',
-			function()
+
+
+			$catCals.on(
+				'click', 'span', function()
 			{
-				$(this).closest('div').children('p').slideUp(100);
-			});
-			
-			$imgUL.on( 'click',
-				'.toggleWYSIWYG',
-			function(e)
-			{
-				e.preventDefault();
-			
-				var $par		= $(this).closest('li');
-			
-				$WYSIWYG.hide();
-			
-				if ( $par.hasClass('catCal_WYSIWYG') )
-				{
-					$par.removeClass('catCal_WYSIWYG fc_gradient1');
-				} else {
-					$imgUL.children('li').removeClass('catCal_WYSIWYG fc_gradient1');
-			
-					var	pos			= $par.position(),
-						widthImg	= $par.find('.catCal_left').outerWidth()
-						widthLi		= $par.outerWidth(),
-						widthWY		= $WYSIWYG.outerWidth(),
-						heightLi	= $par.outerHeight(),
-						posLeft		= ( pos.left - ( widthLi / 2 ) ) < 0 ? 0 : ( pos.left - ( widthLi / 2 ) ),
-						ajaxData	= {
-							page_id		: cCID.page_id,
-							section_id	: cCID.section_id,
-							gallery_id	: cCID.section_id,
-							imgID		: $par.find('input[name=imgID]').val(),
-							action		: 'getContent',
-							_cat_ajax	: 1
-						};
-			
-					$WYSIWYG.css({
-						top:	( pos.top + heightLi - 20 ) + "px"
-					}).find('input[name=imgID]').val(ajaxData.imgID);
-			
-					$par.addClass('catCal_WYSIWYG');
-					$.ajax(
-					{
-						type:		'POST',
-						context:	$par,
-						url:		CAT_URL + '/modules/catCalendar/save.php',
-						dataType:	'JSON',
-						data:		ajaxData,
-						cache:		false,
-						beforeSend:	function( data )
-						{
-							// Set activity and store in a variable to use it later
-							data.process	= set_activity( 'Loading content' );
-						},
-						success:	function( data, textStatus, jqXHR )
-						{
-							if ( data.success === true )
-							{
-								$(this).addClass('fc_gradient1');
-								$WYSIWYG.fadeIn(400);
-								CKEDITOR.instances['wysiwyg_' + ajaxData.section_id].setData( data.event.event_content );
-								CKEDITOR.instances['wysiwyg_' + ajaxData.section_id].updateElement();
-								return_success( jqXHR.process , data.message );
-							}
-							else {
-								$par.removeClass('catCal_WYSIWYG ');
-								// return error
-								return_error( jqXHR.process , data.message );
-							}
-						},
-						error:		function( data, textStatus, jqXHR )
-						{
-							$par.removeClass('catCal_WYSIWYG ');
-							return_error( jqXHR.process , data.message );
-						}
-					});
-				}
-			});
-			
-			$WYSIWYG.on( 'click',
-				'input:reset',
-			function(e)
-			{
-				e.preventDefault();
-				$imgUL.children('li').removeClass('catCal_WYSIWYG fc_gradient1');
-				$WYSIWYG.hide();
+				$catCals.toggleClass('cChide');
 			});
 
-			$catNav.children('li').click( function()
+			$catCals.on(
+				'click', 'li', function()
 			{
+				console.log($(this).data('calid'));
+				/*
 				var $curr	= $(this),
 					cur_ind	= $curr.index(),
 					$nav	= $curr.closest('ul'),
 					$tabs	= $nav.next('ul'),
 					$currT	= $tabs.children('li').eq(cur_ind);
 				$nav.children('li').removeClass('active').filter($curr).addClass('active');
-				$tabs.children('li').removeClass('active').filter($currT).addClass('active');
+				$tabs.children('li').removeClass('active').filter($currT).addClass('active');*/
 			});
 		});
 	}

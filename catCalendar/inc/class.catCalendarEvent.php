@@ -53,7 +53,6 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 	{
 	
 		public $eventID				= NULL;
-		private $sectionID			= NULL;
 		private static $instance	= NULL;
 		private $location			= NULL;
 		private $title				= NULL;
@@ -71,24 +70,22 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		private $modifiedID			= NULL;
 	
 	
-		public function __construct($section_id = NULL)
+		public function __construct($eventID = NULL)
 		{
-			if ( $section_id === true )
+			if ( $eventID === true )
 			{
 				self::initAdd();
 			}
 			# if no $section_id is given, try to get the global
-			if ( !$section_id
-				||!is_numeric($section_id)
-				) global $section_id;
-			
-			
+			if ( !$eventID
+				||!is_numeric($eventID)
+				) return false;
+			else $this->eventID	= $eventID;
+
+			return $this;
 		}
 	
-		public function __destruct()
-		{
-			// TODO: implement here
-		}
+		public function __destruct() {}
 	
 		public static function getInstance()
 		{
@@ -106,8 +103,8 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		{
 			// TODO: implement here
 		}
-	
-		public function setOption()
+
+/*		public function setOption()
 		{
 			// TODO: implement here
 		}
@@ -116,10 +113,47 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		{
 			// TODO: implement here
 		}
-	
+*/
 		public function getEvent()
 		{
-			// TODO: implement here
+			$getEvent	= CAT_Helper_Page::getInstance()->db()->query(
+				'SELECT * FROM `:prefix:mod_catCalendar_events` ' .
+					'WHERE `eventID` = :eventID',
+				array(
+					'eventID'	=> $this->eventID
+				)
+			);
+
+			$return	= array();
+			if( ( isset($getEvent) && $getEvent->numRows() > 0 )
+				&& !false == ($row = $getEvent->fetchRow() ) )
+			{
+				$return	= array(
+					'calendar'		=> $row['calID'],
+					'location'		=> $row['location'],
+					'title'			=> $row['title'],
+					'description'	=> $row['description'],
+					'kind'			=> $row['kind'],
+					'start_date'	=> strftime('%Y-%m-%d',strtotime($row['start'])),
+					'start_day'		=> strftime('%d',strtotime($row['start'])),
+					'start_time'	=> strftime('%H:%M',strtotime($row['start'])),
+					'end_date'		=> strftime('%Y-%m-%d',strtotime($row['end'])),
+					'end_day'		=> strftime('%d',strtotime($row['end'])),
+					'end_time'		=> strftime('%H:%M',strtotime($row['end'])),
+					'timestamp'		=> $row['timestamp'],
+					'eventURL'		=> $row['eventURL'],
+					'UID'			=> $row['UID'],
+					'published'		=> $row['published'],
+					'allday'		=> $row['allday'],
+					'timestampDate'	=> strftime('%d.%m.%Y',strtotime($row['timestamp'])),
+					'timestampTime'	=> strftime('%H:%M',strtotime($row['timestamp'])),
+					'modifiedDate'	=> strftime('%Y-%m-%d',strtotime($row['modified'])),
+					'modifiedTime'	=> strftime('%H:%M',strtotime($row['modified'])),
+					'createdID'		=> CAT_Users::get_user_details($row['createdID'],'display_name'),
+					'modifiedID'	=> CAT_Users::get_user_details($row['modifiedID'],'display_name')
+				);
+			}
+			return $return;
 		}
 	
 		public function setEvent()

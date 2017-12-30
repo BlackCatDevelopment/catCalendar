@@ -47,9 +47,9 @@ $LANG = array(
 	'Save skin &amp; reload'		=> 'Speichern &amp; Neuladen',
 
 // --- modify ---				
-    'Options for frontend'			=> 'Optionen f&uuml;rs Frontend',
-    'Cancel'						=> 'Abbrechen',
-    'Calendar'						=> 'Kalender',
+	'Options for frontend'			=> 'Optionen f&uuml;rs Frontend',
+	'Cancel'						=> 'Abbrechen',
+	'Calendar'						=> 'Kalender',
 	'All calendars'					=> 'Alle Kalender',
 	'Event title'					=> 'Name des Termins',
 	'Place'							=> 'Ort hinzuf&uuml;gen',

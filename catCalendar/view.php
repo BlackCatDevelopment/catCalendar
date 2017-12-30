@@ -42,7 +42,7 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-include_once "inc/class.catCalendarObject.php";
+require_once "inc/class.catCalendarObject.php";
 
 $catCalendar	= new catCalendarObject();
 
@@ -54,7 +54,7 @@ $parser_data	= array(
 	'section_id'		=> $section_id,
 	'version'			=> CAT_Helper_Addons::getModuleVersion('catCalendar'),
 	'variant'			=> $catCalendar->getVariant(),
-	'module_variants'	=> $catCalendar->getAllVariants(),
+	'module_variants'	=> catCalendarObject::getAllVariants(),
 	'options'			=> $catCalendar->getOptions(),
 	'page_link'			=> CAT_Helper_Page::getInstance()->properties( $page_id, 'link' ),
 	'section_name'		=> str_replace( array('ä', 'ö', 'ü', 'ß'), array('ae', 'oe', 'ue', 'ss'), strtolower( $section['name'] ) )
@@ -73,14 +73,14 @@ if ( file_exists( CAT_PATH . '/modules/lib_mdetect/mdetect/mdetect.php' ) )
 	$parser_data['options']['is_mobile']	= NULL;
 }
 
-$viewPHPpath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/view/';
+$viewPHPpath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/view/';
 
 if ( file_exists( $viewPHPpath . $catCalendar->getVariant() . '/view.php' ) )
 	include( $viewPHPpath . $catCalendar->getVariant() . '/view.php' );
 elseif ( file_exists( $viewPHPpath . 'default/view.php' ) )
 	include( $viewPHPpath . 'default/view.php' );
 
-$templatePath	= CAT_PATH . '/modules/' . $catCalendar::$directory .'/templates/';
+$templatePath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/templates/';
 
 if ( file_exists( $templatePath . $catCalendar->getVariant() . '/view.tpl' ) )
 	$parser->setPath( $templatePath . $catCalendar->getVariant() );

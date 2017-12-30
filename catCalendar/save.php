@@ -42,9 +42,8 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-$val		= CAT_Helper_Validate::getInstance();
 $lang		= CAT_Helper_I18n::getInstance();
-$is_ajax	= $val->sanitizePost( '_cat_ajax','numeric' );
+$is_ajax	= CAT_Helper_Validate::getInstance()->sanitizePost( '_cat_ajax','numeric' );
 $backend	= $is_ajax == 1
 					? CAT_Backend::getInstance('Pages', 'pages_modify', false)
 					: CAT_Backend::getInstance('Pages', 'pages_modify');
@@ -55,8 +54,8 @@ $ajax_return	= array();
 // ===============
 // ! Get page id
 // ===============
-$page_id	= $val->get('_REQUEST','page_id','numeric');
-$section_id	= $val->get('_REQUEST','section_id','numeric');
+$page_id	= CAT_Helper_Validate::getInstance()->get('_REQUEST','page_id','numeric');
+$section_id	= CAT_Helper_Validate::getInstance()->get('_REQUEST','section_id','numeric');
 
 $update_when_modified		= true; // Tells script to update when this page was last updated
 
@@ -65,20 +64,19 @@ if ( CAT_Helper_Page::getPagePermission( $page_id, 'admin' ) !== true )
 	$backend->print_error( 'You do not have permissions to modify this page!' );
 }
 
-include_once "inc/class.catgallery.php";
+require_once "inc/class.catCalendarObject.php";
+require_once "inc/class.catCalendarEvent.php";
 
-$catGallery	= new catGallery();
+$catCalendar	= new catCalendarObject();
 
-$variant		= $catGallery->getVariant();
+$savePHPpath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/save/';
 
-$module_path	= '/modules/cc_catgallery/';
+$lang->addFile( $lang->getLang().'.php', CAT_PATH  . '/modules/' . catCalendarObject::$directory . 'languages/' );
 
-$lang->addFile( $lang->getLang().'.php', CAT_PATH . $module_path . 'languages/' );
-
-if ( file_exists( CAT_PATH . $module_path .'save/' . $variant . '/save.php' ) )
-	include_once( CAT_PATH . $module_path .'save/' . $variant . '/save.php' );
-elseif ( file_exists( CAT_PATH . $module_path .'save/default/save.php' ) )
-	include_once( CAT_PATH . $module_path .'save/default/save.php' );
+if ( file_exists( $savePHPpath . $catCalendar->getVariant() . '/save.php' ) )
+	include_once( $savePHPpath . $catCalendar->getVariant() . '/save.php' );
+elseif ( file_exists( $savePHPpath .'save/default/save.php' ) )
+	include_once( $savePHPpath .'save/default/save.php' );
 
 $update_when_modified = true;
 CAT_Backend::getInstance()->updateWhenModified();

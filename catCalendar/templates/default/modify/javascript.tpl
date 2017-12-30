@@ -29,6 +29,7 @@
 	}
 	catCalIDs.push(
 	\{
-		'section_id'	: {$section_id}
+		'section_id'	: {$section_id},
+		'page_id'		: {$page_id}
 	});
 </script>

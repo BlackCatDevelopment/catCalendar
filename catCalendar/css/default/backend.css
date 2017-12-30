@@ -56,20 +56,29 @@
 .catCal_form input[type=text] {
 	width: 100%;
 }
-.catCal input,
-.catCal textarea,
-.catCal button,
-.catCal select {
+.catCal_wrapper input,
+.catCal_wrapper textarea,
+.catCal_wrapper select {
 	width: 100%;
 }
-.catCal input.input_50p,
-.catCal textarea.input_50p,
-.catCal button.input_50p {
+.catCal_wrapper input.input_50p,
+.catCal_wrapper textarea.input_50p,
+.catCal_wrapper select.input_50p,
+.catCal_wrapper button.input_50p {
 	width: 50%;
 	display: inline-block;
 	float:	left;
-	margin:	0px;;
+	margin:	0px;
 }
+.catCal_wrapper input.input_25p,
+.catCal_wrapper select.input_25p,
+.catCal_wrapper textarea.input_25p,
+.catCal_wrapper button.input_25p {
+	width: 25%;
+	display: inline-block;
+	margin:	0px;
+}
+
 .catCal_form input[type=text].cc_In100px,
 .cc_In100px {
 	display:	inline-block;
@@ -141,6 +150,7 @@
 	display:		flex;
 }
 	.catCal_wrapper nav {
+		position:			relative;
 		-webkit-box-flex:	1;
 		-webkit-flex:		1 0 200px;
 		-ms-flex:			1 0 200px;
@@ -162,8 +172,8 @@
 		.catCal_wrapper nav dt {
 			padding:		.2em .4em;
 			color:			#2dadda;
-			font-size:		1.4em;
-			font-weight:	100;
+			font-size:		1.1em;
+			font-weight:	700;
 		}
 		.catCal_wrapper nav dd {
 			position:		relative;
@@ -171,6 +181,16 @@
 			color:			#282a2e;
 			font-size:		1em;
 			font-weight:	400;
+			cursor:			pointer;
+		}
+		.catCal_wrapper nav dd:hover {
+			background:	#f2f3f4;
+		}
+		.catCal_wrapper nav dd.active {
+			background:		#dcf3ff;
+		}
+		.catCal_wrapper nav dd.active:hover {
+			background:		#cbe9ff;
 		}
 			.catCal_wrapper nav dd::before {
 				content:					'';
@@ -186,10 +206,101 @@
 				-ms-box-shadow:				50%;
 				border-radius:				50%;
 			}
+			.catCal_wrapper nav dd.cal_2::before {
+				background:	#6dc539;
+			}
 			.catCal_wrapper nav dd span {
-				color:	#b1bec7;
+				font-size:	.9em;
+				float:		right;
+				color:		#b1bec7;
 			}
 
+
+.catCal_cals {
+	position:		absolute;
+	right:			0;
+	bottom:			0;
+	left:			0;
+	color:			#5b6268;
+	background:		#f2f3f4;
+	text-align:		center;
+	text-shadow:	none;
+}
+	.catCal_cals > span {
+		cursor:			pointer;
+		display:		block;
+		padding:		.4em 0;
+		background:		#d8dbdd;
+		border-top:		1px solid #b1bec7;
+		border-bottom:	1px solid #b1bec7;
+	}
+	.catCal_cals.cChide  > span {
+		border-bottom:	0 none;
+	}
+	.catCal_wrapper nav .catCal_cals ul,
+	.catCal_cals form {
+		max-height:			4000px;
+		overflow:			hidden;
+		-webkit-transition:	all .5s cubic-bezier(1, 0, 1, -.05);
+		-moz-transition:	all .5s cubic-bezier(1, 0, 1, -.05);
+		-o-transition:		all .5s cubic-bezier(1, 0, 1, -.05);
+		-ms-transition:		all .5s cubic-bezier(1, 0, 1, -.05);
+		transition:			all .5s cubic-bezier(1, 0, 1, -.05);
+	}
+	.catCal_wrapper nav .catCal_cals.cChide ul,
+	.catCal_cals.cChide form {
+		max-height:			0;
+		padding:			0;
+		border:				0;
+		-webkit-transition:	all .5s cubic-bezier(0, 1.05, 0, 1);
+		-moz-transition:	all .5s cubic-bezier(0, 1.05, 0, 1);
+		-o-transition:		all .5s cubic-bezier(0, 1.05, 0, 1);
+		-ms-transition:		all .5s cubic-bezier(0, 1.05, 0, 1);
+		transition:			all .5s cubic-bezier(0, 1.05, 0, 1);
+
+	}
+		.catCal_cals form {
+			border-top:			1px solid #b1bec7;
+			padding:			.5em;
+			display:			-webkit-box;
+			display:			-moz-box;
+			display:			-o-flexbox;
+			display:			-ms-flexbox;
+			display:			flex;
+			-webkit-transition:	all .25s cubic-bezier(1, 0, 1, -.05);
+			-moz-transition:	all .25s cubic-bezier(1, 0, 1, -.05);
+			-o-transition:		all .25s cubic-bezier(1, 0, 1, -.05);
+			-ms-transition:		all .25s cubic-bezier(1, 0, 1, -.05);
+			transition:			all .25s cubic-bezier(1, 0, 1, -.05);
+		}
+		.catCal_cals.cChide form {
+			-webkit-transition:	all .25s cubic-bezier(0, 1.05, 0, 1);
+			-moz-transition:	all .25s cubic-bezier(0, 1.05, 0, 1);
+			-o-transition:		all .25s cubic-bezier(0, 1.05, 0, 1);
+			-ms-transition:		all .25s cubic-bezier(0, 1.05, 0, 1);
+			transition:			all .25s cubic-bezier(0, 1.05, 0, 1);
+		}
+		.catCal_cals input {
+			-webkit-box-flex:	1;
+			-webkit-flex:		1 0 80%;
+			-ms-flex:			1 0 80%;
+			flex:				1 0 80%;
+		}
+		.catCal_cals button {
+			-webkit-box-flex:	1;
+			-webkit-flex:		0 0 2em;
+			-ms-flex:			0 0 2em;
+			flex:				0 0 2em;
+		}
+		.catCal_wrapper nav .catCal_cals li {
+			padding:			.4em 0;
+			cursor:				pointer;
+		}
+
+	.catCal_wrapper nav .catCal_cals li:hover {
+		color:			white;
+		background:		#2a9ada;
+	}
 
 .catCal_form small {
 	display:	block;

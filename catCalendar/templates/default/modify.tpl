@@ -30,32 +30,20 @@
 	{include(modify/set_general.tpl)}
 	<div class="catCal_wrapper">
 		<nav>
-			<ol>
-				<li>
-					<dl>
-						<dt>27.12.2017</dt>
-						<dd class="cal_1">Ampelgespräche Abschlussschüler <span>13:30 - 14:00</span></dd>
-						<dd class="cal_1">Frank Unterrichtsbesuch Mirjam <span>13:30 - 14:00</span></dd>
-						<dd class="cal_1">Kino mit der Klasse <span>13:30 - 14:00</span></dd>
-					</dl>
-					<dl>
-						<dt>28.12.2017</dt>
-						<dd class="cal_1">SAD EVA Teamtreffen <span>13:30 - 14:00</span></dd>
-					</dl>
-				{*foreach $events as event}
-				{include(modify/event.tpl)}
-				{/foreach}
-				{$event = NULL}
-				{include(modify/event.tpl)*}
-				<li>
-			</ol>
-			<div class="catCal_cals">
+			<div id="catCalEvents_{$section_id}" class="catCalEvents">
+				{foreach $dates date events}{include(modify/listEvent.tpl)}{/foreach}
+			</div>
+			<div id="catCal_cals_{$section_id}" class="catCal_cals">
 				<span class="icon-menu"> {translate('All calendars')}</span>
 				<ul>
-					<li>{translate('All calendars')}</li>
-					{*foreach *}<li>Privat</li>{*/foreach*}
-					{*foreach *}<li>Lorem ipsum</li>{*/foreach*}
+					<li data-calid="0">{translate('All calendars')}</li>
+					{foreach $calendars cal}<li data-calid="{$cal.calID}">
+						{$cal.name}
+					</li>{/foreach}
 				</ul>
+				<form>
+					<input type="text" name="newCalendar"><button type="submit" class="icon-plus"></button>
+				</form>
 			</div>
 		</nav>
 		{include(modify/event.tpl)}

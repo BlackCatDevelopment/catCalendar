@@ -59,7 +59,6 @@ function catCalendarAutoload($class)
 
 spl_autoload_register('catCalendarAutoload');
 
-
 if ( ! class_exists( 'catCalendarObject', false ) ) {
 
 	class catCalendarObject
@@ -80,14 +79,18 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		private $TZID					= NULL;
 		private $summertime				= true;
 		private $events					= array();
+		private $calendars				= array();
+		
+		private $eventList				= '';
+
 		protected $options				= array();
 		protected $variant				= 'default';
 		protected static $allVariants	= array();
 		private static $CalObj			= NULL;
 		private static $eventObj		= array();
 		private static $initOptions		= array(
-			'variant'		=> 'default',
-			'published'		=> 1
+			'variant'			=> 'default',
+			'ics-public'		=> 1
 		);
 	
 		public function __construct( $section_id = NULL )
@@ -100,7 +103,8 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			} else if ( !$section_id
 					||!is_numeric($section_id)
 				) global $section_id;
-			$this->section_id	= intval( $section_id );;
+
+			$this->setSectionID( $section_id );
 
 			self::$CalObj	= new \Eluceo\iCal\Component\Calendar('www.example.com');
 			self::$eventObj[]	= new \Eluceo\iCal\Component\Event();
@@ -128,14 +132,14 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 
 		private function initAdd()
 		{
-			if ( !$this->section_id ) return false;
+			if ( !$this->getSectionID() ) return false;
 
 			// Add a new catCalendar
 			if ( CAT_Helper_Page::getInstance()->db()->query(
 					'INSERT INTO `:prefix:mod_catCalendar`
 						( `section_id` ) VALUES ( :secID )',
 					array(
-						'secID'	=> $this->section_id
+						'secID'	=> $this->getSectionID()
 					)
 				)
 			) {
@@ -171,9 +175,9 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		 * @return bool true/false
 		 *
 		 **/
-		public function saveOptions( $name = NULL, $value = '' )
+		public function setOption( $name = NULL, $value = '' )
 		{
-			if ( !$this->section_id
+			if ( !$this->getSectionID()
 				|| !$name
 			) return false;
 
@@ -183,11 +187,11 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 						'`name`			= :name, ' .
 						'`value`		= :value',
 				array(
-					'secID'	=> $this->section_id,
+					'secID'	=> $this->getSectionID(),
 					'name'	=> $name,
 					'value'	=> is_null($value) ? '' : $value
 				)
-			) ) return true;
+			) ) return $this;
 			else return false;
 		} // end saveOptions()
 
@@ -201,10 +205,9 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		 * @return array()
 		 *
 		 **/
-		public function getOptions( $name = NULL )
+		public function getOption( $name = NULL )
 		{
-
-			if ( !$this->section_id ) return false;
+			if ( !$this->getSectionID() ) return false;
 
 			if ( $name && isset($this->options[$name]) ) return $this->options[$name];
 
@@ -214,15 +217,15 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 						'WHERE `section_id` = :secID AND ' .
 							'`name` = :name',
 					array(
-						'secID'	=> $this->section_id,
-						'name'			=> $name
+						'secID'	=> $this->getSectionID(),
+						'name'	=> $name
 					)
 				) : 
 				CAT_Helper_Page::getInstance()->db()->query(
 					'SELECT * FROM `:prefix:mod_catCalendar_options` ' .
 						'WHERE `section_id` = :secID',
 					array(
-						'secID'	=> $this->section_id
+						'secID'	=> $this->getSectionID()
 					)
 			);
 
@@ -242,12 +245,15 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			}
 			return $this->options;
 		} // end getOptions()
-	
-		public function setVariant()
+
+
+
+		public function setVariant( $variant = '' )
 		{
-			// TODO: implement here
+			$this->options['_variant']	= $variant;
+			$this->saveOptions( 'variant', $variant );
 		}
-	
+
 		/**
 		 * get variant of gallery
 		 *
@@ -260,7 +266,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			if ( isset( $this->options['_variant'] ) )
 				return $this->options['_variant'];
 
-			$this->getOptions('variant');
+			$this->getOption('variant');
 
 			$this->options['_variant']	= $this->options['variant'] != '' ? $this->options['variant'] : 'default';
 
@@ -295,10 +301,78 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		{
 			// TODO: implement here
 		}
-	
+
+		public function getCalendar()
+		{
+			if ( !$this->getSectionID() ) return false;
+
+			$getCals	= CAT_Helper_Page::getInstance()->db()->query(
+				'SELECT * FROM `:prefix:mod_catCalendar` ' .
+					'WHERE `section_id` = :secID',
+				array(
+					'secID'	=> $this->getSectionID()
+				)
+			);
+
+			$this->calendars	= array();
+
+			if ( isset($getCals) && $getCals->numRows() > 0)
+			{
+				while( !false == ($row = $getCals->fetchRow( MYSQL_ASSOC ) ) )
+				{
+					$this->calendars[]	= $row;
+				}
+			}
+			return $this->calendars;
+		}
+
 		public function getAllEvents()
 		{
-			// TODO: implement here
+			if ( !$this->getSectionID() ) return false;
+
+			$this->events	= array();
+
+			$getEvents	= CAT_Helper_Page::getInstance()->db()->query(
+				'SELECT *, day(start) AS sD, month(start) AS sM, year(start) AS sY FROM `:prefix:mod_catCalendar_events` ' .
+					'WHERE `calID` IN ' .
+						'(SELECT `calID` FROM `:prefix:mod_catCalendar` WHERE `section_id` = :secID)' . 
+					'ORDER BY year(start), month(start), day(start)',
+				array(
+					'secID'	=> $this->getSectionID()
+				)
+			);
+			if ( isset($getEvents) && $getEvents->numRows() > 0)
+			{
+				while( !false == ($row = $getEvents->fetchRow( MYSQL_ASSOC ) ) )
+				{
+					$this->events[$row['sD'].'.'.$row['sM'].'.'.$row['sY']][]	= array(
+						'eventID'		=> $row['eventID'],
+						'calID'			=> $row['calID'],
+						'location'		=> $row['location'],
+						'title'			=> $row['title'],
+						'description'	=> $row['description'],
+						'kind'			=> $row['kind'],
+						'start_date'	=> strftime('%Y-%m-%d',strtotime($row['start'])),
+						'start_day'		=> strftime('%d',strtotime($row['start'])),
+						'start_time'	=> strftime('%H:%M',strtotime($row['start'])),
+						'end_date'		=> strftime('%Y-%m-%d',strtotime($row['end'])),
+						'end_day'		=> strftime('%d',strtotime($row['end'])),
+						'end_time'		=> strftime('%H:%M',strtotime($row['end'])),
+						'timestamp'		=> $row['timestamp'],
+						'eventURL'		=> $row['eventURL'],
+						'UID'			=> $row['UID'],
+						'published'		=> $row['published'],
+						'allday'		=> $row['allday'],
+						'timestampDate'	=> strftime('%d.%m.%Y',strtotime($row['timestamp'])),
+						'timestampTime'	=> strftime('%H:%M',strtotime($row['timestamp'])),
+						'modifiedDate'	=> strftime('%Y-%m-%d',strtotime($row['modified'])),
+						'modifiedTime'	=> strftime('%H:%M',strtotime($row['modified'])),
+						'createdID'		=> CAT_Users::get_user_details($row['createdID'],'display_name'),
+						'modifiedID'	=> CAT_Users::get_user_details($row['modifiedID'],'display_name')
+					);
+				}
+			}
+			return $this->events;
 		}
 	
 		private function getSummerTime()
@@ -310,15 +384,19 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		{
 			// TODO: implement here
 		}
-	
+
+
 		private function getSectionID()
 		{
-			// TODO: implement here
+			if ( !$this->section_id ) return false;
+			else return $this->section_id;
 		}
 	
-		private function setSectionID()
+		private function setSectionID( $section_id = NULL )
 		{
-			// TODO: implement here
+			if ( !$section_id ) return false;
+			$this->section_id	= intval( $section_id );
+			return $this;
 		}
 	
 		private function getCalURL()
@@ -355,7 +433,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			echo self::$CalObj->render();
 		}
 
-	
+
 		/**
 		 * include headers.inc.php
 		 *
@@ -363,7 +441,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		 * @return string
 		 *
 		 **/
-		public function includeHeader()
+		public function getHeader()
 		{
 			if ( file_exists( CAT_PATH . '/modules/' . self::$directory .'/headers_inc/' . $this->getVariant() . '/headers.inc.php' ) )
 				return CAT_PATH . '/modules/' . self::$directory . '/headers_inc/' . $this->getVariant() . '/headers.inc.php';
