@@ -385,6 +385,8 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		private function getEventsList()
 		{
 			global $parser;
+			if( !$this->getSectionID() || !$parser ) return false;
+
 			$templatePath	= CAT_PATH . '/modules/' . self::$directory .'/templates/';
 			
 			if ( file_exists( $templatePath . $this->getVariant() . '/listEvent.tpl' ) )
@@ -403,7 +405,6 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 				);
 				$return	.= $parser->get( 'listEvent', $data );
 			}
-
 			return $return;
 		}
 

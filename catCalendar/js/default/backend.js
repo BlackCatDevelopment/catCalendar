@@ -152,11 +152,13 @@ $(document).ready(function()
 						if ( data.success === true )
 						{
 							return_success( jqXHR.process , data.message );
-							console.log(data);
-							$catEvents.html(data.events);
+							var cur	= $catEvents.find('.active').data('eventid');
+							var	$act	= $catEvents.html(data.events).find('dd[data-eventid=' + cur + ']');
+							// If the element exists in current calendar, add class active, otherwise activate the first element
+							if( $act.length )
+								$act.addClass('active');
+							else $catEvents.find('dd:first').click();
 							var $cur	= $(this);
-
-
 						}
 						else {
 							// return error
