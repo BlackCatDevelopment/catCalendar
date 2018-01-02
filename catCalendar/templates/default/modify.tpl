@@ -24,7 +24,7 @@
 
 {include(modify/javascript.tpl)}
 
-<div class="catCal_form" id="catCal_{$section_id}">
+<div class="catCal_form" id="catCal_{$section_id}" data-display_name="{display_name}">
 	{include(modify/set_skin.tpl)}
 	{include(modify/add_event.tpl)}
 	{include(modify/set_general.tpl)}

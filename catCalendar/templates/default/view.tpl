@@ -23,19 +23,21 @@
  *}
 {if $countImg}
 <script type="text/javascript">
-	$(document).ready( function()
+	if (typeof catCalIDs === 'undefined')
 	\{
+		catCalIDs	= [];
+	}
+	catCalIDs.push(
+	\{
+		'section_id'	: {$section_id}
 	});
 </script>
 {/if}
 
 <section class="catCalendar" id="catCalendar_{$section_id}">
-	{foreach $events as image}{if $event.published}
+	{foreach $dates event}{if $event.published}
 	<article>
 			<a href="#"><img src="{$imgURL}{$event.picture}" width="{$options.resize_x}" height="{$options.resize_y}" alt="{$event.options.alt}" /></a>
-			{if $options.label && $event.image_content != ''}<div class="label_text">
-				{$event.image_content}
-			</div>{/if}
 	</article>
 	{/if}{/foreach}
 </section>

@@ -47,7 +47,7 @@ if (defined('CAT_PATH')) {
 #	@include dirname(__FILE__) . '/class.catCalendarEvent.php';
 #}
 
-function catCalendarAutoload($class)
+function catCalendarAutoload( $class )
 {
 	$url	= explode('\\',$class);
 	if ( $url[0] == 'Eluceo' )

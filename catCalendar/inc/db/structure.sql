@@ -24,7 +24,7 @@ CREATE TABLE `:prefix:mod_catCalendar` (
 	`summertime` TINYINT(1) NULL DEFAULT NULL,
 	PRIMARY KEY ( `calID` ),
 	CONSTRAINT `:prefix:cCal_sections` FOREIGN KEY (`section_id`) REFERENCES `:prefix:sections`(`section_id`) ON DELETE CASCADE
-) COMMENT='Main table for catCalendar'
+) COMMENT='Main table for catCalendars'
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8
 COLLATE='utf8_general_ci';
@@ -59,7 +59,7 @@ CREATE TABLE `:prefix:mod_catCalendar_events` (
 	`createdID` INT(11) UNSIGNED DEFAULT 0,
 	`modifiedID` INT(11) UNSIGNED DEFAULT 0,
 	PRIMARY KEY ( `eventID` ),
-	CONSTRAINT `:prefix:cCalEventSec` FOREIGN KEY (`calID`) REFERENCES `:prefix:mod_catCalendar`(`calID`) ON DELETE CASCADE,
+	CONSTRAINT `:prefix:cCalEvCalID` FOREIGN KEY (`calID`) REFERENCES `:prefix:mod_catCalendar`(`calID`) ON DELETE CASCADE,
 	CONSTRAINT `:prefix:cCalCreated` FOREIGN KEY (`createdID`) REFERENCES `:prefix:users`(`user_id`) ON DELETE CASCADE,
 	CONSTRAINT `:prefix:cCalModified` FOREIGN KEY (`modifiedID`) REFERENCES `:prefix:users`(`user_id`) ON DELETE CASCADE
 ) COMMENT='Table for events for catCalendar'

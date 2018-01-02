@@ -113,12 +113,13 @@ if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric
 	}
 } elseif ( $eventID = CAT_Helper_Validate::getInstance()->sanitizePost( 'eventid','numeric' ) )
 {
-	$catCalEvent	= new catCalendarEvent($eventID);
+	$catCalEvent	= new catCalendarEvent( $eventID );
 
 	switch ( $action )
 	{
 		case 'getEvent':
-			$success		=  $catCalEvent->getEvent();
+			$success		=  $catCalEvent->getEvent(true);
+
 			$ajax_return	= array(
 				'message'	=> $lang->translate( 'Got event!' ),
 				'event'		=> $success,

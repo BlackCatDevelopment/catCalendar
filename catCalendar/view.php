@@ -55,11 +55,15 @@ $parser_data	= array(
 	'version'			=> CAT_Helper_Addons::getModuleVersion('catCalendar'),
 	'variant'			=> $catCalendar->getVariant(),
 	'module_variants'	=> catCalendarObject::getAllVariants(),
-	'options'			=> $catCalendar->getOptions(),
+	'options'			=> $catCalendar->getOption(),
+	'dates'				=> $catCalendar->getAllEvents(),
+	'calendars'			=> $catCalendar->getCalendar(),
 	'page_link'			=> CAT_Helper_Page::getInstance()->properties( $page_id, 'link' ),
 	'section_name'		=> str_replace( array('ä', 'ö', 'ü', 'ß'), array('ae', 'oe', 'ue', 'ss'), strtolower( $section['name'] ) )
 );
-
+echo '<pre style="max-width:600px;">';
+print_r($parser_data);
+echo '</pre>';
 
 if ( file_exists( CAT_PATH . '/modules/lib_mdetect/mdetect/mdetect.php' ) )
 {

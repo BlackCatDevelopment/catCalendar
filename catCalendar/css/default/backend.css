@@ -56,27 +56,33 @@
 .catCal_form input[type=text] {
 	width: 100%;
 }
-.catCal_wrapper input,
-.catCal_wrapper textarea,
-.catCal_wrapper select {
-	width: 100%;
+.catCal_wrapper > form input,
+.catCal_wrapper > form textarea,
+.catCal_wrapper > form select {
+	width:			100%;
+	margin:			0 0 1em 0;
 }
-.catCal_wrapper input.input_50p,
-.catCal_wrapper textarea.input_50p,
-.catCal_wrapper select.input_50p,
-.catCal_wrapper button.input_50p {
+.catCal_wrapper > form input.input_50p,
+.catCal_wrapper > form textarea.input_50p,
+.catCal_wrapper > form select.input_50p,
+.catCal_wrapper > form button.input_50p,
+.input_50p {
 	width: 50%;
 	display: inline-block;
 	float:	left;
-	margin:	0px;
 }
-.catCal_wrapper input.input_25p,
-.catCal_wrapper select.input_25p,
-.catCal_wrapper textarea.input_25p,
-.catCal_wrapper button.input_25p {
+.catCal_wrapper > form input.input_25p,
+.catCal_wrapper > form select.input_25p,
+.catCal_wrapper > form textarea.input_25p,
+.catCal_wrapper > form button.input_25p,
+.input_25p {
 	width: 25%;
 	display: inline-block;
-	margin:	0px;
+}
+
+.label80 {
+	width:	80px;
+	display: inline-block;
 }
 
 .catCal_form input[type=text].cc_In100px,
@@ -139,6 +145,13 @@
 
 
 
+.catCal_form hr {
+	border-top:	1px solid #b1bec7;
+}
+
+
+
+
 .catCal_wrapper {
 	text-shadow:	0 none;
 	width:			100%;
@@ -158,7 +171,7 @@
 		border-right:		1px solid #d8dbdd;
 	}
 	.catCalEvents {
-		height:		32em;
+		height:		50em;
 		margin:		0 0 2.5em 0;
 		overflow-y:	auto;
 	}
@@ -308,9 +321,24 @@
 		background:		#2a9ada;
 	}
 
-.catCal_form small {
-	display:	block;
-	color:		#b1bec7;
-	font-size:	.9em;
-	text-align:	right;
+.catCal_wrapper small,
+.catCal_form aside small {
+	display:		block;
+	padding:		.8em 0;
+	color:			#b1bec7;
+	font-size:		.9em;
+	text-align:		right;
+}
+
+.cC_ADtoggle {
+	opacity:			0;
+	-webkit-transition:	all .25s ease-in;
+	-moz-transition:	all .25s ease-in;
+	-o-transition:		all .25s ease-in;
+	-ms-transition:		all .25s ease-in;
+	transition:			all .25s ease-in;
+}
+
+.cC_Active.cC_ADtoggle {
+	opacity:	1;
 }

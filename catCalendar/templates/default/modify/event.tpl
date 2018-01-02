@@ -23,6 +23,8 @@
  *}
 
 <form action="{$CAT_URL}/modules/catCalendar/save.php" method="post" class="ajaxForm" data-eventid="" id="catCalFrom_{$section_id}">
+	<button type="submit" name="addEvent" id="addEvent_{$section_id}" class="icon-plus"> {translate('Add event')} / {translate('Reset Form')} </button>
+	<hr>
 	<input type="hidden" name="action" value="saveEvent">
 	<input type="hidden" name="event_options" value="title, location, allday, start_date, start_time, end_date, end_time, calendar, description">
 	<input type="hidden" name="_cat_ajax" value="1">
@@ -33,32 +35,40 @@
 	<label for="cC_place_{$section_id}">{translate('Place')}:</label>
 	<input id="cC_place_{$section_id}" type="text" name="location" value="{if $event.options.place}{$event.options.place}{/if}" placeholder="{translate('Place')}">
 
-	<label for="cC_allday_{$section_id}">{translate('All day')}:</label>
+	<hr>
+
+	<label for="cC_allday_{$section_id}" class="label80">{translate('All day')}:</label>
 	<input id="cC_allday_{$section_id}" type="checkbox" name="allday"{if $event.options.allday} checked="checked"{/if} class="input_25p"><br>
 
-	<label for="cC_start_date_{$section_id}">{translate('From')}:</label>
+	<label for="cC_start_date_{$section_id}" class="label80">{translate('From')}:</label>
 	<input id="cC_start_date_{$section_id}" type="date" name="start_date" value="{if $event.options.start_date}{$event.options.start_date}{/if}" placeholder="{translate('from date')}" class="input_25p">
-	<input id="cC_start_time_{$section_id}" type="time" step="60" name="start_time" value="{if $event.options.start_time}{$event.options.start_time}{/if}" placeholder="{translate('from time')}" class="input_25p"><br>
-	
-	<label for="cC_end_date_{$section_id}">{translate('Until')}:</label>
+	<span class="cC_ADtoggle">
+		<input id="cC_start_time_{$section_id}" type="time" step="60" name="start_time" value="{if $event.options.start_time}{$event.options.start_time}{/if}" placeholder="{translate('from time')}" class="input_25p"><br>
+	</span>
+	<label for="cC_end_date_{$section_id}" class="label80">{translate('Until')}:</label>
 	<input id="cC_end_date_{$section_id}" type="date" name="end_date" value="{if $event.options.end_date}{$event.options.end_date}{/if}" placeholder="{translate('until date')}" class="input_25p">
-	<input id="cC_end_time_{$section_id}" type="time" step="60" name="end_time" value="{if $event.options.end_time}{$event.options.end_time}{/if}" placeholder="{translate('until time')}" class="input_25p"><br>
+	<span class="cC_ADtoggle">
+		<input id="cC_end_time_{$section_id}" type="time" step="60" name="end_time" value="{if $event.options.end_time}{$event.options.end_time}{/if}" placeholder="{translate('until time')}" class="input_25p">
+	</span>
+	<hr>
 
-	<label for="cC_calendar_{$section_id}">{translate('Calendar')}:</label>
+	<label for="cC_calendar_{$section_id}" class="label80">{translate('Calendar')}:</label>
 	<select id="cC_calendar_{$section_id}" name="calendar" class="input_25p">
 		{foreach $calendars cal}<option value="{$cal.calID}">
 			{$cal.name}
 		</option>{/foreach}
-	</select><br>
+	</select>
+
+	<hr>
 
 	{*<label for="cC_description_{$section_id}">{translate('Description')}:</label><br>*}
 	<textarea id="cC_description_{$section_id}" type="text" name="description" placeholder="{translate('Description')}" rows="6" cols="80">{if $event.options.description}{$event.options.description}{/if}</textarea><br>
 
 	<hr>
-		<small>Erstellt am <strong id="cC_Created_{$section_id}">$created</strong> Uhr von <strong id="cC_User_{$section_id}">$user</strong></small>
-	<hr>
 
 	<button type="submit" name="action" value="saveEvent">{translate('Save event')}</button>
 	<button type="submit" name="action" value="publishEvent">{translate('Publish event')}</button>
 	<button type="submit" name="action" value="duplicateEvent">{translate('Duplicate event')}</button>
+
+	<small>Erstellt am <strong id="cC_Created_{$section_id}">... um ...</strong> Uhr von <strong id="cC_User_{$section_id}">...</strong></small>
 </form>

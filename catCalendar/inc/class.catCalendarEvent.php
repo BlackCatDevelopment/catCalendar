@@ -52,11 +52,13 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 	class catCalendarEvent
 	{
 	
-		public $eventID				= NULL;
+		private $eventID			= NULL;
 		private static $instance	= NULL;
+
+		private $calID				= NULL;
 		private $location			= NULL;
 		private $title				= NULL;
-		private $description		= NULL;
+		private $description		= '';
 		private $kind				= NULL;
 		private $start				= NULL;
 		private $end				= NULL;
@@ -64,7 +66,7 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		private $eventURL			= NULL;
 		private $UID				= NULL;
 		private $published			= NULL;
-		private $fullDay			= NULL;
+		private $allday				= NULL;
 		private $modified			= NULL;
 		private $createdID			= NULL;
 		private $modifiedID			= NULL;
@@ -77,12 +79,8 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 				self::initAdd();
 			}
 			# if no $section_id is given, try to get the global
-			if ( !$eventID
-				||!is_numeric($eventID)
-				) return false;
-			else $this->eventID	= $eventID;
-
-			return $this;
+			if ( !$eventID ) return false;
+			else return $this->setEventID($eventID);
 		}
 	
 		public function __destruct() {}
@@ -93,10 +91,76 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 				self::$instance	= new self();
 			return self::$instance;
 		}
-	
-		public function save()
+
+		private function setEventID($eventID=NULL)
 		{
-			// TODO: implement here
+			if(!is_numeric($eventID)) return false;
+			else $this->eventID	= $eventID;
+			return $this;
+		}
+
+		private function getEventID()
+		{
+			return $this->eventID;
+		}
+
+
+		public function save( $saveOne = NULL )
+		{
+			if ( !$this->getEventID() ) return false;
+
+			if ( !$saveAll && CAT_Helper_Page::getInstance()->db()->query(
+				'UPDATE `:prefix:mod_catCalendar_events`' .
+					' SET `calID`			= :calID' .
+					' WHERE `eventID`		= :eventID',
+				array(
+						'eventID'		=> $this->getEventID(),
+						'calID'			=> $this->getProperty( 'calID' ),
+						'location'		=> $this->getProperty( 'location' ),
+						'title'			=> $this->getProperty( 'title' ),
+						'description'	=> $this->getProperty( 'description' ),
+						'kind'			=> $this->getProperty( 'kind' ),
+						'start'			=> $this->getProperty( 'start' ),
+						'end'			=> $this->getProperty( 'end' ),
+#						'timestamp'		=> $this->getProperty( 'timestamp' ),
+						'eventURL'		=> $this->getProperty( 'eventURL' ),
+						'UID'			=> $this->getProperty( 'UID' ),
+#						'published'		=> $this->getProperty( 'published' ),
+						'allday'		=> $this->getProperty( 'allday' ),
+						'modified'		=> $this->getProperty( 'modified' ),
+#						'createdID'		=> $this->getProperty( 'createdID' ),
+						'modifiedID'	=> $this->getProperty( 'modifiedID' )
+			) )
+			) return $this;
+
+
+			elseif ( property_exists( 'catCalendarEvent', $saveOne )
+				&& CAT_Helper_Page::getInstance()->db()->query(
+				'UPDATE `:prefix:mod_catCalendar_events`' .
+					' SET `' . $saveOne . '` = :val' .
+					' WHERE `eventID`		= :eventID',
+				array(
+						'eventID'		=> $this->getEventID(),
+						'val'			=> $this->getProperty( $saveOne )
+/*						'location'		=> $this->getProperty( 'location' ),
+						'title'			=> $this->getProperty( 'title' ),
+						'description'	=> $this->getProperty( 'description' ),
+						'kind'			=> $this->getProperty( 'kind' ),
+						'start'			=> $this->getProperty( 'start' ),
+						'end'			=> $this->getProperty( 'end' ),
+#						'timestamp'		=> $this->getProperty( 'timestamp' ),
+						'eventURL'		=> $this->getProperty( 'eventURL' ),
+						'UID'			=> $this->getProperty( 'UID' ),
+#						'published'		=> $this->getProperty( 'published' ),
+						'allday'		=> $this->getProperty( 'allday' ),
+						'modified'		=> $this->getProperty( 'modified' ),
+#						'createdID'		=> $this->getProperty( 'createdID' ),
+						'modifiedID'	=> $this->getProperty( 'modifiedID' )*/
+			) )
+			) return $this;
+
+
+			else return false;
 		}
 	
 		public function remove()
@@ -114,53 +178,95 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			// TODO: implement here
 		}
 */
-		public function getEvent()
+		public function getEvent( $return = NULL )
 		{
 			$getEvent	= CAT_Helper_Page::getInstance()->db()->query(
 				'SELECT * FROM `:prefix:mod_catCalendar_events` ' .
 					'WHERE `eventID` = :eventID',
 				array(
-					'eventID'	=> $this->eventID
+					'eventID'	=> $this->getEventID()
 				)
 			);
 
-			$return	= array();
 			if( ( isset($getEvent) && $getEvent->numRows() > 0 )
 				&& !false == ($row = $getEvent->fetchRow() ) )
 			{
-				$return	= array(
-					'calendar'		=> $row['calID'],
-					'location'		=> $row['location'],
-					'title'			=> $row['title'],
-					'description'	=> $row['description'],
-					'kind'			=> $row['kind'],
-					'start_date'	=> strftime('%Y-%m-%d',strtotime($row['start'])),
-					'start_day'		=> strftime('%d',strtotime($row['start'])),
-					'start_time'	=> strftime('%H:%M',strtotime($row['start'])),
-					'end_date'		=> strftime('%Y-%m-%d',strtotime($row['end'])),
-					'end_day'		=> strftime('%d',strtotime($row['end'])),
-					'end_time'		=> strftime('%H:%M',strtotime($row['end'])),
-					'timestamp'		=> $row['timestamp'],
-					'eventURL'		=> $row['eventURL'],
-					'UID'			=> $row['UID'],
-					'published'		=> $row['published'],
-					'allday'		=> $row['allday'],
-					'timestampDate'	=> strftime('%d.%m.%Y',strtotime($row['timestamp'])),
-					'timestampTime'	=> strftime('%H:%M',strtotime($row['timestamp'])),
-					'modifiedDate'	=> strftime('%Y-%m-%d',strtotime($row['modified'])),
-					'modifiedTime'	=> strftime('%H:%M',strtotime($row['modified'])),
-					'createdID'		=> CAT_Users::get_user_details($row['createdID'],'display_name'),
-					'modifiedID'	=> CAT_Users::get_user_details($row['modifiedID'],'display_name')
-				);
+				$this->setProperty( 'calID',		$row['calID']);
+				$this->setProperty( 'location',		$row['location']);
+				$this->setProperty( 'title',		$row['title']);
+				$this->setProperty( 'description',	$row['description']);
+				$this->setProperty( 'kind',			$row['kind']);
+				$this->setProperty( 'start',		$row['start']);
+				$this->setProperty( 'end',			$row['end']);
+				$this->setProperty( 'timestamp',	$row['timestamp']);
+				$this->setProperty( 'eventURL',		$row['eventURL']);
+				$this->setProperty( 'UID',			$row['UID']);
+				$this->setProperty( 'published',	$row['published']);
+				$this->setProperty( 'allday',		$row['allday']);
+				$this->setProperty( 'modified',		$row['timestamp']);
+				$this->setProperty( 'createdID',	$row['createdID']);
+				$this->setProperty( 'modifiedID',	$row['modifiedID']);
 			}
-			return $return;
+
+			if ( $return ) return $this->createArray();
+			else return $this;
 		}
-	
-		public function setEvent()
+
+
+		private function createArray()
 		{
-			// TODO: implement here
+			return array(
+				'calendar'		=> $this->getProperty('calID'),
+				'location'		=> $this->getProperty('location'),
+				'title'			=> $this->getProperty('title'),
+				'description'	=> $this->getProperty('description'),
+				'kind'			=> $this->getProperty('kind'),
+				'start_date'	=> strftime('%Y-%m-%d',	strtotime($this->getProperty('start')) ),
+				'start_day'		=> strftime('%d',		strtotime($this->getProperty('start')) ),
+				'start_time'	=> strftime('%H:%M',	strtotime($this->getProperty('start')) ),
+				'end_date'		=> strftime('%Y-%m-%d',	strtotime($this->getProperty('end')) ),
+				'end_day'		=> strftime('%d',		strtotime($this->getProperty('end')) ),
+				'end_time'		=> strftime('%H:%M',	strtotime($this->getProperty('end')) ),
+				'timestamp'		=> $this->getProperty('timestamp'),
+				'eventURL'		=> $this->getProperty('eventURL'),
+				'UID'			=> $this->getProperty('UID'),
+				'published'		=> $this->getProperty('published'),
+				'allday'		=> $this->getProperty('allday'),
+				'timestampDate'	=> strftime('%d.%m.%Y',	strtotime($this->getProperty('timestamp')) ),
+				'timestampTime'	=> strftime('%H:%M',	strtotime($this->getProperty('timestamp')) ),
+				'modifiedDate'	=> strftime('%Y-%m-%d',	strtotime($this->getProperty('timestamp')) ),
+				'modifiedTime'	=> strftime('%H:%M',	strtotime($this->getProperty('timestamp')) ),
+				'createdID'		=> CAT_Users::get_user_details( $this->getProperty('createdID'), 'display_name' ),
+				'modifiedID'	=> CAT_Users::get_user_details( $this->getProperty('modifiedID'), 'display_name' )
+			);
 		}
-	
+
+
+		public function setProperty( $key = NULL, $value = NULL )
+		{
+			if ( !$this->getEventID()
+				|| !property_exists( 'catCalendarEvent', $key )
+			) return false;
+			else {
+				$this->$key	= $value;
+				return $this;
+			}
+		}
+
+		public function getProperty( $key = NULL )
+		{
+			if ( !$this->getEventID()
+				|| !property_exists( 'catCalendarEvent', $key )
+			) return false;
+			else return $this->$key;
+
+/*				'INSERT INTO `:prefix:mod_blacknews_content`
+						(`page_id`, `section_id`, `news_id`, `title`, `subtitle`, `auto_generate_size`, `auto_generate` , `content`, `short`)
+						VALUES (:page_id, :section_id, :news_id, :title, :subtitle, :auto_generate_size, :auto_generate, :content, :short )';*/
+		}
+
+
+
 		private function publishEvent()
 		{
 			// TODO: implement here

@@ -61,6 +61,8 @@ $LANG = array(
 	'until date'					=> 'bis Datum',
 	'until time'					=> 'bis Zeit',
 	'Description'					=> 'Beschreibung',
+	'Add event'						=> 'Termin hinzuf&uuml;gen',
+	'Reset Form'					=> 'Formular leeren',
 
 
 // --- save ---				

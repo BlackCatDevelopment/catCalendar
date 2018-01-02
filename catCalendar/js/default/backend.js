@@ -22,6 +22,29 @@
  *
  */
 
+if(typeof cC_checkToggle !== 'function'){
+
+	function cC_checkToggle($form,check,$tog,trueValue)
+	{
+		if (typeof trueValue === 'undefined') trueValue	= false;
+
+		var $cur	= $form.find('input[name="' + check + '"]');
+
+		if ( ( $cur.is(':checked') && trueValue === true )
+			|| ( !$cur.is(':checked') && trueValue === false ) )
+		{
+			$tog.addClass('cC_Active')
+				.find('input, textarea, select').prop('disabled', false);
+		} else
+		{
+			$tog.removeClass('cC_Active')
+				.find('input, textarea, select').prop('disabled', true);
+		}
+	}
+
+}
+
+
 $(document).ready(function()
 {
 	if (typeof catCalIDs !== 'undefined' && typeof catCalLoaded === 'undefined')
@@ -35,13 +58,33 @@ $(document).ready(function()
 				$catEvents	= $catCal.find('#catCalEvents_' + cCID.section_id),
 				$catCals	= $catCal.find('#catCal_cals_' + cCID.section_id),
 				$creatUser	= $('#cC_User_' + cCID.section_id),
-				$creatTime	= $('#cC_Created_' + cCID.section_id);
+				$creatTime	= $('#cC_Created_' + cCID.section_id),
+				$addE		= $('#addEvent_' + cCID.section_id);
 
+			cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
 
 			$catCal.find('.cc_toggle_set').next('form').hide();
 			$catCal.find('.cc_toggle_set, .catCal_skin input:reset').unbind().click(function()
 			{
 				$(this).closest('.catCal_skin').children('form').slideToggle(200);
+			});
+
+			$form.on(
+				'click', '#cC_allday_' + cCID.section_id, function()
+			{
+				cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
+			});
+
+			$addE.on(
+				'click', function(e)
+			{
+				e.preventDefault();
+				$form[0].reset();
+				cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
+				$form.find('input:text, textarea').first().focus();
+				
+				$creatUser.html('...');
+				$creatTime.html('... um ...');
 			});
 
 			$catEvents.on(
@@ -101,6 +144,7 @@ $(document).ready(function()
 										$i.val(v);
 								}
 							});
+							cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
 						}
 						else {
 							// return error
@@ -114,7 +158,6 @@ $(document).ready(function()
 					}
 				});
 			});
-
 
 			$catCals.on(
 				'click', 'span', function()
