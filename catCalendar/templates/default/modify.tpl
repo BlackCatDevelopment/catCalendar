@@ -34,10 +34,10 @@
 				{foreach $dates date events}{include(modify/listEvent.tpl)}{/foreach}
 			</div>
 			<div id="catCal_cals_{$section_id}" class="catCal_cals cChide">
-				<span class="icon-menu"> {translate('All calendars')}</span>
+				<span class="ccIcons-menu-updown"> {translate('All calendars')}</span>
 				<ul>
-					<li data-calid="-1">{translate('All calendars')}</li>
-					{foreach $calendars cal}<li data-calid="{$cal.calID}">
+					<li data-calid="-1" class="ccIcons-calendar">{translate('All calendars')}</li>
+					{foreach $calendars cal}<li data-calid="{$cal.calID}" class="ccIcons-calendar">
 						{$cal.name}
 					</li>{/foreach}
 				</ul>

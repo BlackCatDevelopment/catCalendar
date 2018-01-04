@@ -54,11 +54,12 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 	
 		private $eventID			= NULL;
 		private static $instance	= NULL;
+		private static $staticVars	= array( 'staticVars', 'modified', 'eventID', 'timestamp', 'instance' );
 
 		private $calID				= NULL;
 		private $location			= NULL;
 		private $title				= NULL;
-		private $description		= '';
+		private $description		= NULL;
 		private $kind				= NULL;
 		private $start				= NULL;
 		private $end				= NULL;
@@ -82,9 +83,10 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			if ( !$eventID ) return false;
 			else return $this->setEventID($eventID);
 		}
-	
+
 		public function __destruct() {}
-	
+
+
 		public static function getInstance()
 		{
 			if (!self::$instance)
@@ -92,46 +94,96 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			return self::$instance;
 		}
 
+		/**
+		 * Set the private property eventID
+		 *
+		 * @access private
+		 * @param  integer	$eventID	- ID of the event object
+		 * @return object
+		 *
+		 **/
 		private function setEventID($eventID=NULL)
 		{
 			if(!is_numeric($eventID)) return false;
 			else $this->eventID	= $eventID;
 			return $this;
-		}
+		}	// setEventID
 
+		/**
+		 * Get the private property eventID
+		 *
+		 * @access private
+		 * @return integer
+		 *
+		 **/
 		private function getEventID()
 		{
 			return $this->eventID;
-		}
+		}	// getEventID
 
 
+		/**
+		 * save the event to database
+		 * options: one single property, save by an array or save all properties having values
+		 *
+		 * @access public
+		 * @param  array/string	$saveOne	
+		 * 				- You can send an array to save,
+		 * 				an string for one property
+		 * 				or simple NULL to save all filled properties
+		 * @return object
+		 *
+		 **/
 		public function save( $saveOne = NULL )
 		{
 			if ( !$this->getEventID() ) return false;
 
-			if ( !$saveAll && CAT_Helper_Page::getInstance()->db()->query(
-				'UPDATE `:prefix:mod_catCalendar_events`' .
-					' SET `calID`			= :calID' .
-					' WHERE `eventID`		= :eventID',
-				array(
-						'eventID'		=> $this->getEventID(),
-						'calID'			=> $this->getProperty( 'calID' ),
-						'location'		=> $this->getProperty( 'location' ),
-						'title'			=> $this->getProperty( 'title' ),
-						'description'	=> $this->getProperty( 'description' ),
-						'kind'			=> $this->getProperty( 'kind' ),
-						'start'			=> $this->getProperty( 'start' ),
-						'end'			=> $this->getProperty( 'end' ),
-#						'timestamp'		=> $this->getProperty( 'timestamp' ),
-						'eventURL'		=> $this->getProperty( 'eventURL' ),
-						'UID'			=> $this->getProperty( 'UID' ),
-#						'published'		=> $this->getProperty( 'published' ),
-						'allday'		=> $this->getProperty( 'allday' ),
-						'modified'		=> $this->getProperty( 'modified' ),
-#						'createdID'		=> $this->getProperty( 'createdID' ),
-						'modifiedID'	=> $this->getProperty( 'modifiedID' )
-			) )
-			) return $this;
+			if ( !$saveOne )
+			{
+				$saveProp	= array();
+				$saveVal	= array( 'eventID' => $this->getEventID() );
+
+				foreach( get_object_vars($this) as $key => $val )
+				{
+					if( !is_null( $val ) && !in_array($key,self::$staticVars) )
+					{
+						$saveProp[]		.= '`' . $key . '` = :' . $key . ' ';
+						$saveVal[$key]	 = $val;
+					}
+				}
+
+				if ( CAT_Helper_Page::getInstance()->db()->query(
+					'UPDATE `:prefix:mod_catCalendar_events`' .
+						' SET ' . implode(',', $saveProp) . 
+						' WHERE `eventID` = :eventID',
+					$saveVal
+				) ) return $this;
+				else return false;
+			}
+
+
+			elseif ( is_array($saveOne) )
+			{
+				$saveProp	= array();
+				$saveVal	= array( 'eventID' => $this->getEventID() );
+
+				foreach( $saveOne as $key => $val )
+				{
+					if ( property_exists( 'catCalendarEvent', $key ) && !in_array($key,self::$staticVars) )
+					{
+						$saveProp[]		.= '`' . $key . '` = :' . $key . ' ';
+						$saveVal[$key]	 = $val;
+					}
+				}
+
+				if ( CAT_Helper_Page::getInstance()->db()->query(
+					'UPDATE `:prefix:mod_catCalendar_events`' .
+						' SET ' . implode(',', $saveProp) . 
+						' WHERE `eventID` = :eventID',
+					$saveVal
+				) ) return $this;
+				else return false;
+			}
 
 
 			elseif ( property_exists( 'catCalendarEvent', $saveOne )
@@ -142,27 +194,20 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 				array(
 						'eventID'		=> $this->getEventID(),
 						'val'			=> $this->getProperty( $saveOne )
-/*						'location'		=> $this->getProperty( 'location' ),
-						'title'			=> $this->getProperty( 'title' ),
-						'description'	=> $this->getProperty( 'description' ),
-						'kind'			=> $this->getProperty( 'kind' ),
-						'start'			=> $this->getProperty( 'start' ),
-						'end'			=> $this->getProperty( 'end' ),
-#						'timestamp'		=> $this->getProperty( 'timestamp' ),
-						'eventURL'		=> $this->getProperty( 'eventURL' ),
-						'UID'			=> $this->getProperty( 'UID' ),
-#						'published'		=> $this->getProperty( 'published' ),
-						'allday'		=> $this->getProperty( 'allday' ),
-						'modified'		=> $this->getProperty( 'modified' ),
-#						'createdID'		=> $this->getProperty( 'createdID' ),
-						'modifiedID'	=> $this->getProperty( 'modifiedID' )*/
-			) )
-			) return $this;
-
+				)
+			) ) return $this;
 
 			else return false;
 		}
-	
+
+
+		/**
+		 * Remove an event from database
+		 *
+		 * @access public
+		 * @return bool
+		 *
+		 **/
 		public function remove()
 		{
 			// TODO: implement here
@@ -178,7 +223,16 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			// TODO: implement here
 		}
 */
-		public function getEvent( $return = NULL )
+
+		/**
+		 * Fill the object with the values of an event from database
+		 *
+		 * @access public
+		 * @param  bool		$returnArray	- option whether an array should be returned
+		 * @return object/array
+		 *
+		 **/
+		public function getEvent( $returnArray = NULL )
 		{
 			$getEvent	= CAT_Helper_Page::getInstance()->db()->query(
 				'SELECT * FROM `:prefix:mod_catCalendar_events` ' .
@@ -203,49 +257,95 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 				$this->setProperty( 'UID',			$row['UID']);
 				$this->setProperty( 'published',	$row['published']);
 				$this->setProperty( 'allday',		$row['allday']);
-				$this->setProperty( 'modified',		$row['timestamp']);
+				$this->setProperty( 'modified',		$row['modified']);
 				$this->setProperty( 'createdID',	$row['createdID']);
 				$this->setProperty( 'modifiedID',	$row['modifiedID']);
 			}
 
-			if ( $return ) return $this->createArray();
+			if ( $returnArray ) return $this->createReturnArray();
 			else return $this;
 		}
 
-
-		private function createArray()
+		/**
+		 * create the array for callback if needed
+		 *
+		 * @access private
+		 * @return array
+		 *
+		 **/
+		private function createReturnArray()
 		{
 			return array(
-				'calendar'		=> $this->getProperty('calID'),
+				'calID'			=> $this->getProperty('calID'),
 				'location'		=> $this->getProperty('location'),
 				'title'			=> $this->getProperty('title'),
 				'description'	=> $this->getProperty('description'),
 				'kind'			=> $this->getProperty('kind'),
-				'start_date'	=> strftime('%Y-%m-%d',	strtotime($this->getProperty('start')) ),
-				'start_day'		=> strftime('%d',		strtotime($this->getProperty('start')) ),
-				'start_time'	=> strftime('%H:%M',	strtotime($this->getProperty('start')) ),
-				'end_date'		=> strftime('%Y-%m-%d',	strtotime($this->getProperty('end')) ),
-				'end_day'		=> strftime('%d',		strtotime($this->getProperty('end')) ),
-				'end_time'		=> strftime('%H:%M',	strtotime($this->getProperty('end')) ),
+				'start_date'	=> $this->getDateTimeInput('start'),
+				'start_day'		=> $this->getDateTimeInput('start','%d'),
+				'start_time'	=> $this->getDateTimeInput('start','%H:%M'),
+				'end_date'		=> $this->getDateTimeInput('end'),
+				'end_day'		=> $this->getDateTimeInput('end','%d'),
+				'end_time'		=> $this->getDateTimeInput('end','%H:%M'),
 				'timestamp'		=> $this->getProperty('timestamp'),
 				'eventURL'		=> $this->getProperty('eventURL'),
 				'UID'			=> $this->getProperty('UID'),
 				'published'		=> $this->getProperty('published'),
 				'allday'		=> $this->getProperty('allday'),
-				'timestampDate'	=> strftime('%d.%m.%Y',	strtotime($this->getProperty('timestamp')) ),
-				'timestampTime'	=> strftime('%H:%M',	strtotime($this->getProperty('timestamp')) ),
-				'modifiedDate'	=> strftime('%Y-%m-%d',	strtotime($this->getProperty('timestamp')) ),
-				'modifiedTime'	=> strftime('%H:%M',	strtotime($this->getProperty('timestamp')) ),
+				'timestampDate'	=> $this->getDateTimeInput('timestamp','%d.%m.%Y'),
+				'timestampTime'	=> $this->getDateTimeInput('timestamp','%H:%M'),
+				'modifiedDate'	=> $this->getDateTimeInput('modified'),
+				'modifiedTime'	=> $this->getDateTimeInput('modified','%H:%M'),
 				'createdID'		=> CAT_Users::get_user_details( $this->getProperty('createdID'), 'display_name' ),
 				'modifiedID'	=> CAT_Users::get_user_details( $this->getProperty('modifiedID'), 'display_name' )
 			);
 		}
 
+		/**
+		 * Prepare a valid string from a property for input:date
+		 *
+		 * @access private
+		 * @param  string	$prop	- property which should be converted
+		 * @param  string	$format	- output format
+		 * @return string
+		 *
+		 **/
+		private function getDateTimeInput($prop=NULL,$format='%Y-%m-%d')
+		{
+			if (!$this->getProperty($prop)) return false;
+			return strftime($format, strtotime($this->getProperty($prop)) );
+		}
 
+		/**
+		 * Prepare a valid string from a property for DateTime in SQL
+		 *
+		 * @access private
+		 * @param  string	$prop	- property which should be converted
+		 * @return string
+		 *
+		 **/
+		private function getDateTimeSQL($prop=NULL)
+		{
+			if (!$this->getProperty($prop)) return false;
+			return strftime('%Y-%m-%d %H:%M:00', strtotime($this->getProperty($prop)));
+		}
+
+
+
+		/**
+		 * Store a value to a property of an object
+		 *
+		 * @access public
+		 * @param  string	$key	- attribute of class, that should be set
+		 * @param  string	$value	- value for the attribute
+		 * @return object
+		 *
+		 **/
 		public function setProperty( $key = NULL, $value = NULL )
 		{
 			if ( !$this->getEventID()
 				|| !property_exists( 'catCalendarEvent', $key )
+				|| in_array($key,self::$staticVars)
 			) return false;
 			else {
 				$this->$key	= $value;
@@ -253,10 +353,19 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			}
 		}
 
+		/**
+		 * Get a value of a property of an object
+		 *
+		 * @access public
+		 * @param  string	$key	- attribute of class, that should be got
+		 * @return string
+		 *
+		 **/
 		public function getProperty( $key = NULL )
 		{
 			if ( !$this->getEventID()
 				|| !property_exists( 'catCalendarEvent', $key )
+				|| in_array($key,self::$staticVars)
 			) return false;
 			else return $this->$key;
 
@@ -266,11 +375,54 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		}
 
 
-
-		private function publishEvent()
+		/**
+		 * copy an event
+		 *
+		 * @access public
+		 * @return object
+		 *
+		 **/
+		public function copyEvent()
 		{
-			// TODO: implement here
-		}
+			if ( !$this->getEventID() ) return false;
+
+			return $this;
+		} // end publishEvent()
+
+
+		/**
+		 * (un)publish single column
+		 *
+		 * @access public
+		 * @return bool
+		 *
+		 **/
+		public function publishEvent()
+		{
+			if ( !$this->getEventID() ) return false;
+
+			CAT_Helper_Page::getInstance()->db()->query(
+				'UPDATE `:prefix:mod_catCalendar_events` ' .
+					' SET `published` = 1 - `published` ' .
+					'WHERE `eventID` = :eventID',
+				array(
+					'eventID'	=> $this->getEventID()
+				)
+			);
+
+			$this->setProperty(
+				'published',
+				CAT_Helper_Page::getInstance()->db()->query(
+					'SELECT `published` FROM `:prefix:mod_catCalendar_events` ' .
+						'WHERE `eventID` = :eventID',
+					array(
+						'eventID'	=> $this->getEventID()
+					)
+				)->fetchColumn()
+			);
+
+			return $this->getProperty('published');
+		} // end publishEvent()
 	
 		public function getCalEventURL()
 		{

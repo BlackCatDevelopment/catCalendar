@@ -58,8 +58,7 @@ $(document).ready(function()
 				$catEvents	= $catCal.find('#catCalEvents_' + cCID.section_id),
 				$catCals	= $catCal.find('#catCal_cals_' + cCID.section_id),
 				$creatUser	= $('#cC_User_' + cCID.section_id),
-				$creatTime	= $('#cC_Created_' + cCID.section_id),
-				$addE		= $('#addEvent_' + cCID.section_id);
+				$creatTime	= $('#cC_Created_' + cCID.section_id);
 
 			cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
 
@@ -70,22 +69,160 @@ $(document).ready(function()
 			});
 
 			$form.on(
-				'click', '#cC_allday_' + cCID.section_id, function()
+				'click', '#ButDEvent_' + cCID.section_id, function(e)
 			{
-				cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
+				e.preventDefault();
 			});
+			$form.on(
+				'click', '#ButSEvent_' + cCID.section_id + ', #ButSEvent2_' + cCID.section_id, function(e)
+			{
+				e.preventDefault();
+				var dataForm	= {};
+				$form.find('input, select, textarea').each( function()
+				{
+					var $cur		= $(this);
+					switch($cur.attr('type'))
+					{
+						case 'select':
+							dataForm[$cur.attr('name')] = $cur.children('option:selected').val();
+							break;
+						case 'radio':
+							dataForm[$cur.attr('name')]	= $cur.prop('checked') ? $cur.val() : null;
+							break;
+						case 'checkbox':
+							dataForm[$cur.attr('name')]	= $cur.prop('checked');
+							break;
+						default:
+							dataForm[$cur.attr('name')]	= $cur.val();
+					}
+				});
+				console.log(dataForm);
+				var ajaxData	= {
+						page_id		: cCID.page_id,
+						section_id	: cCID.section_id,
+						eventid		: $form.data('eventid'),
+						event		: dataForm,
+						action		: 'saveEvent',
+						_cat_ajax	: 1
+					};
+				$.ajax(
+				{
+					type:		'POST',
+					context:	$(this),
+					url:		CAT_URL + '/modules/catCalendar/save.php',
+					dataType:	'JSON',
+					data:		ajaxData,
+					cache:		false,
+					beforeSend:	function( data )
+					{
+						// Set activity and store in a vaxsriable to use it later
+						data.process	= set_activity( 'Save event' );
+					},
+					success:	function( data, textStatus, jqXHR )
+					{
+						if ( data.success === true )
+						{
+							return_success( jqXHR.process , data.message );
+/*							var $cur	= $(this);
+							if ( data.event == 1 )
+							{
+								$cur.addClass('published');
+								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');
+							}
+							else {
+								$cur.removeClass('published');
+								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');	
+							}
+*/
+							console.log(data);
+						}
+						else {
+							// return error
+							return_error( jqXHR.process , data.message );
+						}
+					},
+					error:		function( data, textStatus, jqXHR )
+					{
+						console.log( data, textStatus, jqXHR );
+						return_error( jqXHR.process , data.message );
+					}
+				});
+			});
+			$form.on(
+				'click', '#ButPEvent_' + cCID.section_id, function(e)
+			{
+				e.preventDefault();
+				var ajaxData	= {
+						page_id		: cCID.page_id,
+						section_id	: cCID.section_id,
+						eventid		: $form.data('eventid'),
+						action		: 'publishEvent',
+						_cat_ajax	: 1
+					};
 
-			$addE.on(
-				'click', function(e)
+				$.ajax(
+				{
+					type:		'POST',
+					context:	$(this),
+					url:		CAT_URL + '/modules/catCalendar/save.php',
+					dataType:	'JSON',
+					data:		ajaxData,
+					cache:		false,
+					beforeSend:	function( data )
+					{
+						// Set activity and store in a vaxsriable to use it later
+						data.process	= set_activity( 'Publish event' );
+					},
+					success:	function( data, textStatus, jqXHR )
+					{
+						if ( data.success === true )
+						{
+							return_success( jqXHR.process , data.message );
+							var $cur	= $(this);
+							if ( data.event == 1 )
+							{
+								$cur.addClass('published');
+								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');
+							}
+							else {
+								$cur.removeClass('published');
+								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');	
+							}
+
+							console.log(data);
+						}
+						else {
+							// return error
+							return_error( jqXHR.process , data.message );
+						}
+					},
+					error:		function( data, textStatus, jqXHR )
+					{
+						console.log( data, textStatus, jqXHR );
+						return_error( jqXHR.process , data.message );
+					}
+				});
+
+			});
+			$form.on(
+				'click', '#addEvent_' + cCID.section_id, function(e)
 			{
 				e.preventDefault();
 				$form[0].reset();
 				cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
 				$form.find('input:text, textarea').first().focus();
-				
+				$catEvents.find('dd.active').removeClass('active');
+
 				$creatUser.html('...');
 				$creatTime.html('... um ...');
 			});
+
+			$form.on(
+				'click', '#cC_allday_' + cCID.section_id, function()
+			{
+				cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
+			});
+
 
 			$catEvents.on(
 				'click', 'dd', function()
@@ -195,13 +332,17 @@ $(document).ready(function()
 						if ( data.success === true )
 						{
 							return_success( jqXHR.process , data.message );
-							var cur	= $catEvents.find('.active').data('eventid');
-							var	$act	= $catEvents.html(data.events).find('dd[data-eventid=' + cur + ']');
+							
+							var $cur	= $(this),
+								cur		= $catEvents.find('.active').data('eventid'),
+								$act	= $catEvents.html(data.events).find('dd[data-eventid=' + cur + ']');
+
+							$catCals.children('.ccIcons-menu-updown').text( ' ' + $cur.text() );
+
 							// If the element exists in current calendar, add class active, otherwise activate the first element
 							if( $act.length )
 								$act.addClass('active');
 							else $catEvents.find('dd:first').click();
-							var $cur	= $(this);
 						}
 						else {
 							// return error

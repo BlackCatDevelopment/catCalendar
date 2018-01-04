@@ -48,7 +48,6 @@ $backend	= $is_ajax == 1
 					? CAT_Backend::getInstance('Pages', 'pages_modify', false)
 					: CAT_Backend::getInstance('Pages', 'pages_modify');
 
-
 $ajax_return	= array();
 
 // ===============

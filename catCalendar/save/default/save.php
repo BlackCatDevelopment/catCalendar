@@ -87,17 +87,6 @@ if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric
 				'success'	=> true
 			);
 			break;
-		case 'publishIMG':
-			// =========================== 
-			// ! save options for gallery   
-			// =========================== 
-			$success		= $catCalendar->publishImg( $imgID );
-			$ajax_return	= array(
-				'message'	=> $success	? $lang->translate( 'Image published successfully!' ) : $lang->translate( 'Image unpublished successfully!' ),
-				'published'	=> $success,
-				'success'	=> true
-			);
-			break;
 		default:
 			// =========================== 
 			// ! save variant of images   
@@ -118,22 +107,57 @@ if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric
 	switch ( $action )
 	{
 		case 'getEvent':
-			$success		=  $catCalEvent->getEvent(true);
+			$success		=  $catCalEvent->getEvent( true );
 
 			$ajax_return	= array(
-				'message'	=> $lang->translate( 'Got event!' ),
+				'message'	=> $lang->translate( 'Event loaded successfully' ),
 				'event'		=> $success,
 				'success'	=> is_array($success) && count($success) > 0 ? true : false
 			);
 			break;
-		default:
-			// =========================== 
-			// ! save variant of images   
-			// =========================== 
-			$catCalendar->saveOptions( 'variant', CAT_Helper_Validate::getInstance()->sanitizePost('variant') );
+		case 'publishEvent':
+			$publish	= $catCalEvent->publishEvent();
 
 			$ajax_return	= array(
-				'message'	=> $lang->translate( 'Variant saved successfully!' ),
+				'message'	=> $publish
+						? $lang->translate( 'Event published successfully' )
+						: $lang->translate( 'Event unpublished successfully' ),
+				'event'		=> $publish,
+				'success'	=> !is_null($publish) ? true : false
+			);
+			break;
+		default:
+			// =========================== 
+			// ! save event
+			// =========================== 
+			$start	= array();
+			$end	= array();
+			foreach( CAT_Helper_Validate::getInstance()->sanitizePost('event','array') as $key => $val )
+			{
+				switch($key)
+				{
+					case 'start_date':
+						$start[0] = $val;
+						break;
+					case 'start_time':
+						$start[1] = $val;
+						break;
+					case 'end_date':
+						$end[0] = $val;
+						break;
+					case 'end_time':
+						$end[1] = $val;
+						break;
+					default:
+						$catCalEvent->setProperty( $key, $val );
+						break;
+				}
+			}
+
+			$catCalEvent->setProperty( 'start', implode(' ', $start) )->setProperty( 'end', implode(' ', $end) )->save();
+
+			$ajax_return	= array(
+				'message'	=> $lang->translate( 'Event saved successfully!' ),
 				'success'	=> true
 			);
 

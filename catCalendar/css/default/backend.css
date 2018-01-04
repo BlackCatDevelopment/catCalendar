@@ -23,33 +23,73 @@
  */
 
 @font-face {
-	font-family: 'cG_font';
-	src:url('fonts/cG_font.eot?h92q4f');
-	src:url('fonts/cG_font.eot?#iefixh92q4f') format('embedded-opentype'),
-		url('fonts/cG_font.woff?h92q4f') format('woff'),
-		url('fonts/cG_font.ttf?h92q4f') format('truetype'),
-		url('fonts/cG_font.svg?h92q4f#cG_font') format('svg');
-	font-weight: normal;
-	font-style: normal;
+	font-family:	'ccIcons';
+	src:
+		url('fonts/ccIcons.ttf?gfbzo0') format('truetype'),
+		url('fonts/ccIcons.woff?gfbzo0') format('woff'),
+		url('fonts/ccIcons.svg?gfbzo0#ccIcons') format('svg');
+	font-weight:	normal;
+	font-style:		normal;
 }
 
-[class^="cG_icon-"], [class*=" cG_icon-"] {
-	font-family: 'cG_font';
-	speak: none;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-
-	/* Better Font Rendering =========== */
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+[class^="ccIcons-"]::before, [class*=" ccIcons-"]::before {
+	/* use !important to prevent issues with browser extensions that change fonts */
+	font-family:				'ccIcons' !important;
+	speak:						none;
+	font-style:					normal;
+	font-weight:				normal;
+	font-variant:				normal;
+	text-transform:				none;
+	line-height:				1;
+	-webkit-font-smoothing:		antialiased;
+	-moz-osx-font-smoothing:	grayscale;
+	padding:					0 .4em 0 0;
 }
 
-.cG_icon-feed:before {
-	content: "\e986";
+.ccIcons-bug:before {
+  content: "\e020";
 }
+.ccIcons-delete:before {
+  content: "\e022";
+}
+.ccIcons-creativecat:before {
+  content: "\e600";
+}
+.ccIcons-template:before {
+  content: "\e021";
+}
+.ccIcons-documentation:before {
+  content: "\e073";
+}
+.ccIcons-location:before {
+  content: "\e0f2";
+}
+.ccIcons-calendar:before {
+  content: "\e115";
+}
+.ccIcons-plus:before {
+  content: "\e35f";
+}
+.ccIcons-settings:before {
+  content: "\eb60";
+}
+.ccIcons-menu-updown:before {
+  content: "\ec72";
+}
+.ccIcons-checkbox:before {
+  content: "\ee6e";
+}
+.ccIcons-feed:before {
+  content: "\e986";
+}
+.ccIcons-copy:before {
+  content: "\e9cd";
+}
+.ccIcons-loading:before {
+  content: "\eb2b";
+}
+
+
 
 
 
@@ -196,7 +236,7 @@
 		}
 		.catCal_wrapper nav dd {
 			position:		relative;
-			padding:		.2em 1em .2em 2em;
+			padding:		.2em 1em;
 			color:			#282a2e;
 			font-size:		1em;
 			font-weight:	400;
@@ -212,21 +252,10 @@
 			background:		#cbe9ff;
 		}
 			.catCal_wrapper nav dd::before {
-				content:					'';
-				background:					#f02d6a;
-				height:						.5em;
-				width:						.5em;
-				position:					absolute;
-				top:						.6em;
-				left:						1em;
-				-webkit-border-radius:		50%;
-				-moz-border-radius:			50%;
-				-o-box-shadow:				50%;
-				-ms-box-shadow:				50%;
-				border-radius:				50%;
+				color:	#f02d6a;
 			}
 			.catCal_wrapper nav dd.cal_2::before {
-				background:	#6dc539;
+				color:	#6dc539;
 			}
 			.catCal_wrapper nav dd span {
 				font-size:	.9em;
@@ -341,4 +370,17 @@
 
 .cC_Active.cC_ADtoggle {
 	opacity:	1;
+}
+
+button.ccIcons-feed .is_published,
+button.published.ccIcons-feed .not_published {
+	display:	none;
+}
+button.published.ccIcons-feed .is_published,
+button.ccIcons-feed .not_published {
+	display:	inline;
+}
+
+button.published.ccIcons-feed::before {
+	color:		#2a9ada;
 }

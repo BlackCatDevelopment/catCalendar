@@ -373,8 +373,8 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 						'timestampTime'	=> strftime('%H:%M',strtotime($row['timestamp'])),
 						'modifiedDate'	=> strftime('%Y-%m-%d',strtotime($row['modified'])),
 						'modifiedTime'	=> strftime('%H:%M',strtotime($row['modified'])),
-						'createdID'		=> CAT_Users::get_user_details($row['createdID'],'display_name'),
-						'modifiedID'	=> CAT_Users::get_user_details($row['modifiedID'],'display_name')
+						'createdID'		=> CAT_Users::get_user_details( $row['createdID'], 'display_name' ),
+						'modifiedID'	=> CAT_Users::get_user_details( $row['modifiedID'], 'display_name' )
 					);
 				}
 			}

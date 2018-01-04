@@ -24,5 +24,5 @@
 
 <dl>
 	<dt>{$date}</dt>
-	{foreach $events event}<dd class="cal_{$event.calID}" data-eventid="{$event.eventID}">{$event.title} <span>{if $event.allday}ganztägig{else}{$event.start_time} - {$event.end_time}{/if}</span></dd>{/foreach}
+	{foreach $events event}<dd class="cal_{$event.calID} ccIcons-calendar" data-eventid="{$event.eventID}">{$event.title} <span>{if $event.allday}ganztägig{else}{$event.start_time} - {$event.end_time}{/if}</span></dd>{/foreach}
 </dl>

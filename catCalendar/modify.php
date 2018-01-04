@@ -46,7 +46,6 @@ require_once "inc/class.catCalendarObject.php";
 require_once "inc/class.catCalendarEvent.php";
 
 $catCalendar	= new catCalendarObject();
-$test	= new catCalendarEvent(11);
 
 $parser_data	= array(
 	'CAT_ADMIN_URL'		=> CAT_ADMIN_URL,
@@ -60,8 +59,6 @@ $parser_data	= array(
 	'dates'				=> $catCalendar->getAllEvents(),
 	'calendars'			=> $catCalendar->getCalendar()
 );
-
-$test->setProperty( 'description', 'Lorem' );
 
 $modifyPHPpath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/modify/';
 
