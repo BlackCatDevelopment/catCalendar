@@ -247,6 +247,36 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		} // end getOptions()
 
 
+		public function addCalender( $calName = NULL )
+		{
+			if ( !$this->getSectionID() ) return false;
+
+			// Add a new catCalendar
+			if ( CAT_Helper_Page::getInstance()->db()->query(
+					'INSERT INTO `:prefix:mod_catCalendar`
+						( `section_id`, `name` ) VALUES ( :secID, : :calName )',
+					array(
+						'secID'		=> $this->getSectionID(),
+						'calName'	=> $calName
+					)
+				)
+			) {
+				return array(
+					'calID'	=> CAT_Helper_Page::getInstance()->db()->query(
+								'SELECT `calID` FROM `:prefix:mod_catCalendar` ' .
+									'WHERE `section_id` = :secID ' .
+									'AND `name` = :calName',
+								array(
+									'secID'		=> $this->getSectionID(),
+									'calName'	=> $calName
+								)
+							)->fetchColumn(),
+					'name'	=> $calName
+				);
+			}
+			else return false;
+		}
+
 
 		public function setVariant( $variant = '' )
 		{

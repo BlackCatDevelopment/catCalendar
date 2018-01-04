@@ -148,6 +148,9 @@ if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric
 					case 'end_time':
 						$end[1] = $val;
 						break;
+					case 'allday':
+						$catCalEvent->setProperty( $key, $val !== 'false' ? 1 : 0 );
+						break;
 					default:
 						$catCalEvent->setProperty( $key, $val );
 						break;
@@ -163,6 +166,15 @@ if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric
 
 			break;
 	}
+} elseif ( $eventID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calName' ) )
+{
+	$success	= $catCalendar->addCalender( 'calName' );
+
+	$ajax_return	= array(
+		'message'	=> $lang->translate( 'Event saved successfully!' ),
+		'calName'	=> $success,
+		'success'	=> $success ? true : false
+	);
 } else {
 	$backend->print_error(
 		$lang->translate( 'You sent an invalid ID' ),

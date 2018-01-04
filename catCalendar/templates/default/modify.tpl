@@ -42,7 +42,7 @@
 					</li>{/foreach}
 				</ul>
 				<form>
-					<input type="text" name="newCalendar"><button type="submit" class="icon-plus"></button>
+					<input type="text" name="newCalendar"><button type="submit" class="icon-plus" id="addCal_{$section_id}"></button>
 				</form>
 			</div>
 		</nav>

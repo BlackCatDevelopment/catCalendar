@@ -58,7 +58,8 @@ $(document).ready(function()
 				$catEvents	= $catCal.find('#catCalEvents_' + cCID.section_id),
 				$catCals	= $catCal.find('#catCal_cals_' + cCID.section_id),
 				$creatUser	= $('#cC_User_' + cCID.section_id),
-				$creatTime	= $('#cC_Created_' + cCID.section_id);
+				$creatTime	= $('#cC_Created_' + cCID.section_id),
+				$butPub		= $('#ButPEvent_' + cCID.section_id);
 
 			cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
 
@@ -66,6 +67,16 @@ $(document).ready(function()
 			$catCal.find('.cc_toggle_set, .catCal_skin input:reset').unbind().click(function()
 			{
 				$(this).closest('.catCal_skin').children('form').slideToggle(200);
+			});
+
+
+			$form.on(
+				'click', '#addCal_' + cCID.section_id, function(e)
+			{
+				e.preventDefault();
+				var	$cur	= $(this),
+					calName	= $cur.prev('input').val();
+
 			});
 
 			$form.on(
@@ -96,7 +107,7 @@ $(document).ready(function()
 							dataForm[$cur.attr('name')]	= $cur.val();
 					}
 				});
-				console.log(dataForm);
+console.log(dataForm);
 				var ajaxData	= {
 						page_id		: cCID.page_id,
 						section_id	: cCID.section_id,
@@ -133,8 +144,8 @@ $(document).ready(function()
 								$cur.removeClass('published');
 								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');	
 							}
-*/
-							console.log(data);
+
+							console.log(data);*/
 						}
 						else {
 							// return error
@@ -148,6 +159,7 @@ $(document).ready(function()
 					}
 				});
 			});
+
 			$form.on(
 				'click', '#ButPEvent_' + cCID.section_id, function(e)
 			{
@@ -181,15 +193,13 @@ $(document).ready(function()
 							var $cur	= $(this);
 							if ( data.event == 1 )
 							{
-								$cur.addClass('published');
-								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');
+								$butPub.addClass('published');
+/*								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');*/
 							}
 							else {
-								$cur.removeClass('published');
-								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');	
+								$butPub.removeClass('published');
+/*								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');	*/
 							}
-
-							console.log(data);
 						}
 						else {
 							// return error
@@ -204,6 +214,7 @@ $(document).ready(function()
 				});
 
 			});
+
 			$form.on(
 				'click', '#addEvent_' + cCID.section_id, function(e)
 			{
@@ -265,20 +276,29 @@ $(document).ready(function()
 							$.each( data.event, function(k,v)
 							{
 								var $i	= $form.find('input[name="'+k+'"], select[name="'+k+'"], textarea[name="'+k+'"]');
-								switch($i.attr('type'))
+								if( $i.length > 0 )
 								{
-									case 'select':
-										$i.children('option').prop('selected', false);
-										$i.children('option[value="'+v+'"]').prop('selected', true);
-										break;
-									case 'radio':
-										/*$i.prop('checked',v ? true : false);*/
-										break;
-									case 'checkbox':
-										$i.prop('checked', v == 1 ? true : false );
-										break;
-									default:
-										$i.val(v);
+										switch($i.attr('type'))
+										{
+											case 'select':
+												$i.children('option').prop('selected', false);
+												$i.children('option[value="'+v+'"]').prop('selected', true);
+												break;
+											case 'radio':
+												/*$i.prop('checked',v ? true : false);*/
+												break;
+											case 'checkbox':
+												$i.prop('checked', v == 1 ? true : false );
+												break;
+											default:
+												$i.val(v);
+										}
+								} else if ( k == 'published' )
+								{
+									if ( v == 1 )
+										$butPub.addClass('published');
+									else
+										$butPub.removeClass('published');
 								}
 							});
 							cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
