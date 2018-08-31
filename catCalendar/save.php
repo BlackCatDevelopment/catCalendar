@@ -42,54 +42,58 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-$lang		= CAT_Helper_I18n::getInstance();
-$is_ajax	= CAT_Helper_Validate::getInstance()->sanitizePost( '_cat_ajax','numeric' );
-$backend	= $is_ajax == 1
-					? CAT_Backend::getInstance('Pages', 'pages_modify', false)
-					: CAT_Backend::getInstance('Pages', 'pages_modify');
+require_once( 'inc/class.catCalendarObject.php' );
 
-$ajax_return	= array();
+catCalendarObject::save();
 
-// ===============
-// ! Get page id
-// ===============
-$page_id	= CAT_Helper_Validate::getInstance()->get('_REQUEST','page_id','numeric');
-$section_id	= CAT_Helper_Validate::getInstance()->get('_REQUEST','section_id','numeric');
+#$lang		= CAT_Helper_I18n::getInstance();
+#$is_ajax	= CAT_Helper_Validate::getInstance()->sanitizePost( '_cat_ajax','numeric' );
+#$backend	= $is_ajax == 1
+#					? CAT_Backend::getInstance('Pages', 'pages_modify', false)
+#					: CAT_Backend::getInstance('Pages', 'pages_modify');
+#
+#$ajax_return	= array();
+#
+#// ===============
+#// ! Get page id
+#// ===============
+#$page_id	= CAT_Helper_Validate::getInstance()->get('_REQUEST','page_id','numeric');
+#$section_id	= CAT_Helper_Validate::getInstance()->get('_REQUEST','section_id','numeric');
+#
+#$update_when_modified		= true; // Tells script to update when this page was last updated
+#
+#if ( CAT_Helper_Page::getPagePermission( $page_id, 'admin' ) !== true )
+#{
+#	$backend->print_error( 'You do not have permissions to modify this page!' );
+#}
+#
+#require_once "inc/class.catCalendarObject.php";
+#require_once "inc/class.catCalendarEvent.php";
+#
+#$catCalendar	= new catCalendarObject();
+#
+#$savePHPpath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/save/';
+#
+#$lang->addFile( $lang->getLang().'.php', CAT_PATH  . '/modules/' . catCalendarObject::$directory . 'languages/' );
+#
+#if ( file_exists( $savePHPpath . $catCalendar->getVariant() . '/save.php' ) )
+#	include_once( $savePHPpath . $catCalendar->getVariant() . '/save.php' );
+#elseif ( file_exists( $savePHPpath .'save/default/save.php' ) )
+#	include_once( $savePHPpath .'save/default/save.php' );
+#
+#$update_when_modified = true;
+#CAT_Backend::getInstance()->updateWhenModified();
 
-$update_when_modified		= true; // Tells script to update when this page was last updated
-
-if ( CAT_Helper_Page::getPagePermission( $page_id, 'admin' ) !== true )
-{
-	$backend->print_error( 'You do not have permissions to modify this page!' );
-}
-
-require_once "inc/class.catCalendarObject.php";
-require_once "inc/class.catCalendarEvent.php";
-
-$catCalendar	= new catCalendarObject();
-
-$savePHPpath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/save/';
-
-$lang->addFile( $lang->getLang().'.php', CAT_PATH  . '/modules/' . catCalendarObject::$directory . 'languages/' );
-
-if ( file_exists( $savePHPpath . $catCalendar->getVariant() . '/save.php' ) )
-	include_once( $savePHPpath . $catCalendar->getVariant() . '/save.php' );
-elseif ( file_exists( $savePHPpath .'save/default/save.php' ) )
-	include_once( $savePHPpath .'save/default/save.php' );
-
-$update_when_modified = true;
-CAT_Backend::getInstance()->updateWhenModified();
-
-if( $is_ajax == 1 )
-{
-	print json_encode( $ajax_return );
-	exit();
-} else {
-	$backend->print_success(
-		$ajax_return['message'] ? $ajax_return['message'] : $lang->translate( 'Saved successfully' ),
-		CAT_ADMIN_URL . '/pages/modify.php?page_id=' . $page_id
-	);
-	// Print admin footer
-	$backend->print_footer();	
-}
+#if( $is_ajax == 1 )
+#{
+#	print json_encode( $ajax_return );
+#	exit();
+#} else {
+#	$backend->print_success(
+#		$ajax_return['message'] ? $ajax_return['message'] : $lang->translate( 'Saved successfully' ),
+#		CAT_ADMIN_URL . '/pages/modify.php?page_id=' . $page_id
+#	);
+#	// Print admin footer
+#	$backend->print_footer();	
+#}
 ?>

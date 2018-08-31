@@ -42,6 +42,14 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
+
+
+require_once( 'inc/class.catCalendarObject.php' );
+
+#include_once "import.php";
+
+catCalendarObject::modify();
+/*
 require_once "inc/class.catCalendarObject.php";
 require_once "inc/class.catCalendarEvent.php";
 
@@ -59,6 +67,8 @@ $parser_data	= array(
 	'dates'				=> $catCalendar->getAllEvents(),
 	'calendars'			=> $catCalendar->getCalendar()
 );
+
+#include_once "import.php";
 
 $modifyPHPpath	= CAT_PATH . '/modules/' . catCalendarObject::$directory .'/modify/';
 
@@ -80,5 +90,5 @@ $parser->output(
 	'modify',
 	$parser_data
 );
-
+*/
 ?>

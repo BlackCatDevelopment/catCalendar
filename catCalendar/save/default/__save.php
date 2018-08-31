@@ -42,16 +42,16 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-if ( CAT_Helper_Page::getPagePermission( $page_id, 'admin' ) !== true )
-{
-	$backend->print_error( 'You do not have permissions to modify this page!' );
-}
+#if ( CAT_Helper_Page::getPagePermission( $page_id, 'admin' ) !== true )
+#{
+#	$backend->print_error( 'You do not have permissions to modify this page!' );
+#}
 
 // ============================= 
 // ! Get the current gallery_id 
 // ============================= 
 
-$action		= CAT_Helper_Validate::getInstance()->sanitizePost( 'action' );
+#$action		= CAT_Helper_Validate::getInstance()->sanitizePost( 'action' );
 
 if ( $calID = CAT_Helper_Validate::getInstance()->sanitizePost( 'calid','numeric' ) )
 {

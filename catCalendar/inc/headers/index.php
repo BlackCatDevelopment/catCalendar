@@ -1,5 +1,10 @@
 <?php
 /**
+ * ,-----.  ,--.              ,--.    ,-----.          ,--.       ,-----.,--.   ,--. ,---.   
+ * |  |) /_ |  | ,--,--. ,---.|  |,-.'  .--./ ,--,--.,-'  '-.    '  .--./|   `.'   |'   .-'  
+ * |  .-.  \|  |' ,-.  || .--'|     /|  |    ' ,-.  |'-.  .-'    |  |    |  |'.'|  |`.  `-.  
+ * |  '--' /|  |\ '-'  |\ `--.|  \  \'  '--'\\ '-'  |  |  |      '  '--'\|  |   |  |.-'    | 
+ * `------' `--' `--`--' `---'`--'`--'`-----' `--`--'  `--'       `-----'`--'   `--'`-----'  
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -14,17 +19,17 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  *
- *   @author			Matthias Glienke, creativecat
+ *   @author			Matthias Glienke
  *   @copyright			2018, Black Cat Development
- *   @link				https://blackcat-cms.org
+ *   @link				http://blackcat-cms.org
  *   @license			http://www.gnu.org/licenses/gpl.html
  *   @category			CAT_Modules
- *   @package			catCalendar
+ *   @package			blackNews
  *
  */
 
 // include class.secure.php to protect this file and the whole CMS!
-if (defined('CAT_PATH')) {
+if (defined('CAT_PATH')) {	
 	include(CAT_PATH.'/framework/class.secure.php'); 
 } else {
 	$oneback = "../";
@@ -41,11 +46,5 @@ if (defined('CAT_PATH')) {
 	}
 }
 // end include class.secure.php
-
-require_once "inc/class.catCalendarObject.php";
-if ( $section && $for )
-{
-	$mod_headers[$for] = catCalendarObject::getInstance()->setIDs($section)->getHeader($for);
-}
 
 ?>

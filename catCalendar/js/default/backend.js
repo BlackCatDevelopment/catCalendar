@@ -107,15 +107,15 @@ $(document).ready(function()
 							dataForm[$cur.attr('name')]	= $cur.val();
 					}
 				});
-console.log(dataForm);
 				var ajaxData	= {
 						page_id		: cCID.page_id,
 						section_id	: cCID.section_id,
-						eventid		: $form.data('eventid'),
+						eventid		: $form.data('eventid') ? $form.data('eventid') : -1,
 						event		: dataForm,
 						action		: 'saveEvent',
 						_cat_ajax	: 1
 					};
+
 				$.ajax(
 				{
 					type:		'POST',
@@ -133,6 +133,7 @@ console.log(dataForm);
 					{
 						if ( data.success === true )
 						{
+							console.log(data.responseText, textStatus, jqXHR);
 							return_success( jqXHR.process , data.message );
 /*							var $cur	= $(this);
 							if ( data.event == 1 )

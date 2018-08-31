@@ -73,13 +73,13 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		private $modifiedID			= NULL;
 	
 	
-		public function __construct($eventID = NULL)
+		public function __construct(int $eventID = NULL)
 		{
 			if ( $eventID === true )
 			{
 				self::initAdd();
 			}
-			# if no $section_id is given, try to get the global
+			# if no $eventID is given, try to get the global
 			if ( !$eventID ) return false;
 			else return $this->setEventID($eventID);
 		}
@@ -105,7 +105,7 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		private function setEventID($eventID=NULL)
 		{
 			if(!is_numeric($eventID)) return false;
-			else $this->eventID	= $eventID;
+			else $this->eventID	= intval($eventID);
 			return $this;
 		}	// setEventID
 
@@ -121,6 +121,63 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			return $this->eventID;
 		}	// getEventID
 
+		/**
+		 * Save seo URL to database
+		 *
+		 * @access private
+		 * @return integer
+		 *
+		 **/
+		private function geteventURL()
+		{
+			if ( !$this->getEventID() ) return false;
+
+			$getURL	= CAT_Helper_Page::getInstance()->db()->query(
+				'SELECT `URL`, `newURL` FROM `:prefix:mod_catCalendarURL` ' .
+					'WHERE `eventID` = :eventID AND `newURL` = ""',
+				array(
+					'eventID'	=> $this->getEventID()
+				)
+			);
+
+			if( ( isset($getURL) && $getURL->numRows() > 0 )
+				&& !false == ($row = $getURL->fetchRow() ) )
+			{
+				$this->setProperty( 'eventURL', $row['URL']);
+			} else return NULL;
+		}	// geteventURL
+
+		/**
+		 * Save seo URL to database
+		 *
+		 * @access private
+		 * @return integer
+		 *
+		 **/
+		private function setEventURL()
+		{
+			if ( !$this->getEventID() ) return false;
+
+			if ( !$this->geteventURL() )
+			{
+				$this->setProperty(
+					'eventURL',
+					self::createTitleURL( $this->getProperty('title') )
+				);
+				$this->setProperty( 'newURL', '');
+			}
+
+			if ( CAT_Helper_Page::getInstance()->db()->query(
+				'REPLACE `:prefix:mod_catCalendarURL` ' .
+					'SET `eventID` = :eventID, `URL` = :URL, `newURL` = :newURL',
+				array(
+					'eventID'	=> $this->getEventID(),
+					'URL'		=> $this->getProperty( 'eventURL' ),
+					'newURL'	=> $this->getProperty( 'newURL' )
+				)
+			
+			) ) return $this;
+		}	// setEventURL
 
 		/**
 		 * save the event to database
@@ -138,7 +195,34 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		{
 			if ( !$this->getEventID() ) return false;
 
-			if ( !$saveOne )
+			if( $this->getEventID() == -1 )
+			{
+				$saveProp	= array();
+				$saveVal	= array();
+
+				foreach( get_object_vars($this) as $key => $val )
+				{
+					if( $key == 'eventURL' && $val == '' ){
+						$val	= self::createTitleURL( self::getProperty('title') );
+}
+					if( !is_null( $val ) && !in_array($key,self::$staticVars) )
+					{
+						$saveProp[]		.= '`' . trim($key) . '`';
+						$saveVal[$key]	 = "'".$val."'";
+					}
+				}
+
+				if ( CAT_Helper_Page::getInstance()->db()->query(
+					'INSERT INTO `:prefix:mod_catCalendar_events` ' .
+						'( ' . implode(',', $saveProp) . ',`createdID`,`modifiedID`, `UID` ) VALUES ' .
+						'( ' . implode(',', $saveVal) . ', :userID, :userID, :uid )',
+						array(
+							'userID'	=> CAT_Users::get_user_id(),
+							'uid'		=> uniqid()
+						)
+				) ) return $this;
+				else return false;
+			} elseif ( !$saveOne )
 			{
 				$saveProp	= array();
 				$saveVal	= array( 'eventID' => $this->getEventID() );
@@ -223,6 +307,64 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			// TODO: implement here
 		}
 */
+
+		/**
+		 * Fill the object with the values of an event from database
+		 *
+		 * @access public
+		 * @param  bool		$returnArray	- option whether an array should be returned
+		 * @return object/array
+		 *
+		 **/
+		public static function getEventByUrl( string $url = '' )
+		{
+			if ($url == '') return false;
+
+			$getEvent	= CAT_Helper_Page::getInstance()->db()->query(
+				'SELECT  * FROM `:prefix:mod_catCalendar_events` ' .
+					'WHERE `eventURL` = :url',
+				array(
+					'url'	=> $url
+				)
+			);
+
+			if( ( isset($getEvent) && $getEvent->numRows() > 0 )
+				&& !false == ($row = $getEvent->fetchRow() ) )
+			{
+				$start		= DateTime::createFromFormat("Y-m-d H:i:s", $row['start']);
+				$end		= DateTime::createFromFormat("Y-m-d H:i:s", $row['end']);
+				$timestamp	= DateTime::createFromFormat("Y-m-d H:i:s", $row['timestamp']);
+				$modified	= DateTime::createFromFormat("Y-m-d H:i:s", $row['modified']);
+
+				return array(
+					'eventID'		=> $row['eventID'],
+					'calID'			=> $row['calID'],
+					'location'		=> $row['location'],
+					'title'			=> $row['title'],
+					'description'	=> $row['description'],
+					'kind'			=> $row['kind'],
+					'start'			=> $start->format('U'),
+					'start_date'	=> $start->format('Y-m-d'),
+					'start_day'		=> $start->format('d'),
+					'start_time'	=> $start->format('H:i'),
+					'end'			=> $end->format('U'),
+					'end_date'		=> $end->format('Y-m-d'),
+					'end_day'		=> $end->format('d'),
+					'end_time'		=> $end->format('H:i'),
+					'timestamp'		=> $row['timestamp'],
+					'eventURL'		=> $row['eventURL'],
+					'UID'			=> $row['UID'],
+					'published'		=> $row['published'],
+					'allday'		=> $row['allday'],
+					'timestampDate'	=> $timestamp->format('d.m.Y'),
+					'timestampTime'	=> $timestamp->format('H:i'),
+					'modifiedDate'	=> $modified->format('d.m.Y'),
+					'modifiedTime'	=> $modified->format('H:i'),
+					'createdID'		=> CAT_Users::get_user_details( $row['createdID'], 'display_name' ),
+					'modifiedID'	=> CAT_Users::get_user_details( $row['modifiedID'], 'display_name' )
+				);
+			} else return NULL;
+		}
 
 		/**
 		 * Fill the object with the values of an event from database
@@ -375,6 +517,28 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		}
 
 
+		public function setEvent( $setArray = NULL )
+		{
+			foreach( $setArray as $i => $set )
+			{
+				$this->setProperty( $i, $set );
+			}
+			$this->addEvent();
+		}
+
+		/**
+		 * add an event
+		 *
+		 * @access public
+		 * @return object
+		 *
+		 **/
+		private function addEvent()
+		{
+
+		} // end addEvent()
+
+
 		/**
 		 * copy an event
 		 *
@@ -433,5 +597,20 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		{
 			// TODO: implement here
 		}
+
+		/**
+		 * create TitleURL
+		 *
+		 * @access public
+		 * @param  string  $title
+		 * @return string
+		 *
+		 **/
+		public static function createTitleURL( $title = NULL )
+		{
+			if ( !$title ) return false;
+
+			return CAT_Helper_Page::getFilename( $title );
+		} // end createTitleURL()
 	}
 }

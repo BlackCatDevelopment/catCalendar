@@ -25,7 +25,7 @@
 <form action="{$CAT_URL}/modules/catCalendar/save.php" method="post" class="ajaxForm" data-eventid="" id="catCalFrom_{$section_id}">
 	<button type="submit" name="action" id="ButSEvent2_{$section_id}" value="saveEvent" class="hidden">{translate('Save event')}</button>
 	<button type="submit" name="addEvent" id="addEvent_{$section_id}" class="ccIcons-plus">{translate('Add event')} / {translate('Reset Form')} </button>
-	<button type="submit" name="action" id="ButDEvent_{$section_id}" value="duplicateEvent" class="ccIcons-copy right">{translate('Duplicate event')}</button>
+	{*<button type="submit" name="action" id="ButDEvent_{$section_id}" value="duplicateEvent" class="ccIcons-copy right">{translate('Duplicate event')}</button>*}
 	<hr>
 	<input type="hidden" name="action" value="saveEvent">
 {*	<input type="hidden" name="event_options" value="title, location, allday, start_date, start_time, end_date, end_time, calendar, description">*}
@@ -37,6 +37,10 @@
 
 	<label for="cC_place_{$section_id}">{translate('Place')}:</label>
 	<input id="cC_place_{$section_id}" type="text" name="location" value="{if $event.options.place}{$event.options.place}{/if}" placeholder="{translate('Place')}">
+
+	<label for="cC_eventURL_{$section_id}">{translate('SEO URL')}:</label>
+	<input id="cC_eventURL_{$section_id}" type="text" name="eventURL" value="{if $event.options.eventURL}{$event.options.eventURL}{/if}" placeholder="{translate('Will be automatically set on first save')}.">
+
 
 	<hr>
 
@@ -75,6 +79,7 @@
 	</button>
 
 	<button type="submit" name="action" id="ButSEvent_{$section_id}" value="saveEvent">{translate('Save event')}</button>
-<div class="clear"></div>
+	<button type="submit" name="action" id="ButDelEvent_{$section_id}" value="deleteEvent" class="fc_gradient_red fc_gradient_hover">{translate('Delete event')}</button>
+
 	<small>Erstellt am <strong id="cC_Created_{$section_id}">... um ...</strong> Uhr von <strong id="cC_User_{$section_id}">...</strong></small>
 </form>

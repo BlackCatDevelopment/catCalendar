@@ -10,6 +10,7 @@
 /*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
 DROP TABLE IF EXISTS
+	`:prefix:mod_catCalendarURL`,
 	`:prefix:mod_catCalendar_events`,
 	`:prefix:mod_catCalendar_options`,
 	`:prefix:mod_catCalendar`;
@@ -28,7 +29,6 @@ CREATE TABLE `:prefix:mod_catCalendar` (
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8
 COLLATE='utf8_general_ci';
-
 
 CREATE TABLE `:prefix:mod_catCalendar_options` (
 	`section_id` INT(11) NOT NULL DEFAULT 0,
@@ -63,6 +63,17 @@ CREATE TABLE `:prefix:mod_catCalendar_events` (
 	CONSTRAINT `:prefix:cCalCreated` FOREIGN KEY (`createdID`) REFERENCES `:prefix:users`(`user_id`) ON DELETE CASCADE,
 	CONSTRAINT `:prefix:cCalModified` FOREIGN KEY (`modifiedID`) REFERENCES `:prefix:users`(`user_id`) ON DELETE CASCADE
 ) COMMENT='Table for events for catCalendar'
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8
+COLLATE='utf8_general_ci';
+
+CREATE TABLE `:prefix:mod_catCalendarURL` (
+	`eventID` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`URL` VARCHAR(255) NOT NULL DEFAULT '',
+	`newURL` VARCHAR(255) NOT NULL DEFAULT '',
+	PRIMARY KEY ( `eventID`, `URL` ),
+	CONSTRAINT `:prefix:cCalURL` FOREIGN KEY (`eventID`) REFERENCES `:prefix:mod_catCalendar_events`(`eventID`) ON DELETE CASCADE
+) COMMENT='SEO Url for catCalendar'
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8
 COLLATE='utf8_general_ci';

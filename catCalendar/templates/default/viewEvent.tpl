@@ -21,18 +21,18 @@
  *   @package			catCalendar
  *
  *}
-<div class="catCal_skin fc_br_top">
-	<p class="ccIcons-template cc_toggle_set">{translate('Set skin')} <small>({$options.variant})</small></p>
-	<form action="{$CAT_URL}/modules/catCalendar/save.php" method="post" class="fc_gradient1 fc_border_all_light fc_br_bottom fc_shadow_small">
-		<input type="hidden" name="page_id" value="{$page_id}">
-		<input type="hidden" name="section_id" value="{$section_id}">
-		<input type="hidden" name="options" value="variant">
-		<select name="variant">
-		{foreach $module_variants var}
-			<option value="{$var}"{if $var == $options.variant} selected="selected"{/if}>{$var}</option>
-		{/foreach}
-		</select><br/>
-		<input type="submit" name="speichern" value="{translate('Save skin &amp; reload')}"><br/>
-		<input type="reset" name="reset" value="{translate('Close')}">
-	</form>
-</div>
+
+{$sD = strftime('%d.%m.',$event.start)}
+{$sT = strftime('%H:%M',$event.start)}
+{$eD = strftime('%d.%m.',$event.end)}
+{$eT = strftime('%H:%M',$event.end)}
+
+<section class="catCalendarE" id="catCalendarE_{$section_id}">
+	{if $event.published}<article>
+		{if $event.picture}<a href="#"><img src="{$imgURL}{$event.picture}" width="{$options.resize_x}" height="{$options.resize_y}" alt="{$event.options.alt}" /></a>{/if}
+		<h1>{$event.title}</h1>
+		<span class="cC_artTime">{$sD} ({$sT}){if $event.start != $event.end} / {$eD} ({$eT}){/if}</span>
+		<div>{$event.description}</div>
+		<br><a href="{cat_url}/{$options.permalink}" class="button">{translate('Back')}</a>
+	</article>{/if}
+</section>

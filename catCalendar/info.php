@@ -44,16 +44,15 @@ if (defined('CAT_PATH')) {
 
 include_once "inc/class.catCalendarObject.php";
 
-$module_directory		= catCalendarObject::$directory;
-$module_name			= catCalendarObject::$name;
-$module_function		= catCalendarObject::$function;
-$module_version			= catCalendarObject::$version;
-
-$module_platform		= catCalendarObject::$plattform;
-$module_author			= catCalendarObject::$author;
-$module_license			= catCalendarObject::$license;
-$module_description		= catCalendarObject::$description;
-$module_guid			= catCalendarObject::$guid;
+$module_directory		= catCalendarObject::getInfo('directory');
+$module_name			= catCalendarObject::getInfo('name');
+$module_function		= 'page';
+$module_version			= catCalendarObject::getInfo('version');
+$module_platform		= catCalendarObject::getInfo('platform');
+$module_author			= catCalendarObject::getInfo('author');
+$module_license			= catCalendarObject::getInfo('license');
+$module_description		= catCalendarObject::getInfo('description');
+$module_guid			= catCalendarObject::getInfo('guid');
 $module_variants		= catCalendarObject::getAllVariants();
 
 ?>

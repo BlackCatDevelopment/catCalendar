@@ -42,8 +42,12 @@ if (defined('CAT_PATH')) {
 }
 // end include class.secure.php
 
-require_once "inc/class.catCalendarObject.php";
 
+require_once( 'inc/class.catCalendarObject.php' );
+
+catCalendarObject::view();
+
+/*
 $catCalendar	= new catCalendarObject();
 
 
@@ -56,15 +60,16 @@ $parser_data	= array(
 	'variant'			=> $catCalendar->getVariant(),
 	'module_variants'	=> catCalendarObject::getAllVariants(),
 	'options'			=> $catCalendar->getOption(),
-	'dates'				=> $catCalendar->getAllEvents(),
+	'dates'				=> $catCalendar->getEventsInPeriod(strtotime('2018-06-01'),strtotime('2018-06-30'),1),
 	'calendars'			=> $catCalendar->getCalendar(),
 	'page_link'			=> CAT_Helper_Page::getInstance()->properties( $page_id, 'link' ),
-	'section_name'		=> str_replace( array('ä', 'ö', 'ü', 'ß'), array('ae', 'oe', 'ue', 'ss'), strtolower( $section['name'] ) )
+	'section_name'		=> str_replace( array('ä', 'ö', 'ü', 'ß'), array('ae', 'oe', 'ue', 'ss'), strtolower( $section['name'] ) ),
+	'cal'				=> catCalendarObject::getDaysInYearMonth(strtotime('2018-06-03'))
 );
-echo '<pre style="max-width:600px;">';
-print_r($parser_data);
-echo '</pre>';
 
+#echo '<pre>';
+#print_r(catCalendarObject::getDaysInYearMonth());
+#echo '</pre>';
 if ( file_exists( CAT_PATH . '/modules/lib_mdetect/mdetect/mdetect.php' ) )
 {
 	require_once( CAT_PATH . '/modules/lib_mdetect/mdetect/mdetect.php' );
@@ -97,5 +102,5 @@ $parser->output(
 	'view',
 	$parser_data
 );
-
+*/
 ?>

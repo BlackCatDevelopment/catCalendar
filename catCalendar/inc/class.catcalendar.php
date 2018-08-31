@@ -386,28 +386,28 @@ if ( ! class_exists( 'catCalendar', false ) ) {
 		 * @return bool true/false
 		 *
 		 **/
-		public function saveImgOptions( $image_id = NULL, $name = NULL, $value = '' )
-		{
-
-			if( !$this->checkIDs( $image_id ) ||
-					!$name ) return false;
-
-			if ( CAT_Helper_Page::getInstance()->db()->query(
-				'REPLACE INTO `:prefix:mod_catCalendar_images_options` ' .
-					'SET `gallery_id`	= :gallery_id, ' .
-						'`image_id`		= :image_id, ' .
-						'`name`			= :name, ' .
-						'`value`		= :value',
-				array(
-					'gallery_id'	=> self::$gallery_id,
-					'image_id'		=> $image_id,
-					'name'			=> $name,
-					'value'			=> $value
-				)
-			) ) return true;
-			else return false;
-
-		} // end saveContentOptions()
+#		public function saveImgOptions( $image_id = NULL, $name = NULL, $value = '' )
+#		{
+#
+#			if( !$this->checkIDs( $image_id ) ||
+#					!$name ) return false;
+#
+#			if ( CAT_Helper_Page::getInstance()->db()->query(
+#				'REPLACE INTO `:prefix:mod_catCalendar_images_options` ' .
+#					'SET `gallery_id`	= :gallery_id, ' .
+#						'`image_id`		= :image_id, ' .
+#						'`name`			= :name, ' .
+#						'`value`		= :value',
+#				array(
+#					'gallery_id'	=> self::$gallery_id,
+#					'image_id'		=> $image_id,
+#					'name'			=> $name,
+#					'value'			=> $value
+#				)
+#			) ) return true;
+#			else return false;
+#
+#		} // end saveContentOptions()
 
 
 
@@ -506,24 +506,7 @@ if ( ! class_exists( 'catCalendar', false ) ) {
 		} // getID()
 
 
-		/**
-		 * get variant of gallery
-		 *
-		 * @access public
-		 * @return string
-		 *
-		 **/
-		public function getVariant()
-		{
-			if ( isset( $this->options['_variant'] ) )
-				return $this->options['_variant'];
 
-			$this->getOptions('variant');
-
-			$this->options['_variant']	= $this->options['variant'] != '' ? $this->options['variant'] : 'default';
-
-			return $this->options['_variant'];
-		} // getVariant()
 
 
 		/**

@@ -67,6 +67,7 @@ $LANG = array(
 
 // --- save ---				
 	'Save event'					=> 'Termin speichern',
+	'Delete event'					=> 'Termin l&ouml;schen',
 	'Duplicate event'				=> 'Termin kopieren',
 	'An error occoured!'			=> 'Es ist ein Fehler aufgetraten',
 	'Content loaded'				=> 'Inhalt geladen',
@@ -75,5 +76,11 @@ $LANG = array(
 	'Variant saved successfully!'	=> 'Variante erfolgreich gespeichert',
 	'You sent an invalid ID'		=> 'Es wurde keine gültige ID übermittelt.',
 	'Publish event'					=> 'Termin freigeben',
-	'Unpublish event'				=> 'Termin verstecken'
+	'Unpublish event'				=> 'Termin verstecken',
+	
+	'Will be automatically set on first save'	=> 'Wird automatisch beim ersten Speichern erstellt',
+
+// --- frontend ---				
+	'Read more'						=> 'Mehr lesen'
+
 );
