@@ -59,7 +59,8 @@ $(document).ready(function()
 				$catCals	= $catCal.find('#catCal_cals_' + cCID.section_id),
 				$creatUser	= $('#cC_User_' + cCID.section_id),
 				$creatTime	= $('#cC_Created_' + cCID.section_id),
-				$butPub		= $('#ButPEvent_' + cCID.section_id);
+				$butPub		= $('#ButPEvent_' + cCID.section_id),
+				$WYSIWYG	= $('#catCal_WYSIWYG_' + cCID.section_id);
 
 			cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
 
@@ -107,6 +108,7 @@ $(document).ready(function()
 							dataForm[$cur.attr('name')]	= $cur.val();
 					}
 				});
+				dataForm['description']		= CKEDITOR.instances['catCal_WYSIWYG_' + cCID.section_id].getData();
 				var ajaxData	= {
 						page_id		: cCID.page_id,
 						section_id	: cCID.section_id,
@@ -131,6 +133,7 @@ $(document).ready(function()
 					},
 					success:	function( data, textStatus, jqXHR )
 					{
+						$catCals.find('li.active').click();
 						if ( data.success === true )
 						{
 							console.log(data.responseText, textStatus, jqXHR);
@@ -160,6 +163,7 @@ $(document).ready(function()
 					}
 				});
 			});
+
 
 			$form.on(
 				'click', '#ButPEvent_' + cCID.section_id, function(e)
@@ -213,7 +217,51 @@ $(document).ready(function()
 						return_error( jqXHR.process , data.message );
 					}
 				});
+			});
 
+			$form.on(
+				'click', '#ButDelEvent_' + cCID.section_id, function(e)
+			{
+				e.preventDefault();
+				var ajaxData	= {
+						page_id		: cCID.page_id,
+						section_id	: cCID.section_id,
+						eventid		: $form.data('eventid'),
+						action		: 'deleteEvent',
+						_cat_ajax	: 1
+					};
+
+				$.ajax(
+				{
+					type:		'POST',
+					context:	$(this),
+					url:		CAT_URL + '/modules/catCalendar/save.php',
+					dataType:	'JSON',
+					data:		ajaxData,
+					cache:		false,
+					beforeSend:	function( data )
+					{
+						// Set activity and store in a vaxsriable to use it later
+						data.process	= set_activity( 'Publish event' );
+					},
+					success:	function( data, textStatus, jqXHR )
+					{
+						if ( data.success === true )
+						{
+							return_success( jqXHR.process , data.message );
+							$('#addEvent_' + cCID.section_id).click();
+						}
+						else {
+							// return error
+							return_error( jqXHR.process , data.message );
+						}
+					},
+					error:		function( data, textStatus, jqXHR )
+					{
+						console.log( data, textStatus, jqXHR );
+						return_error( jqXHR.process , data.message );
+					}
+				});
 			});
 
 			$form.on(
@@ -227,6 +275,12 @@ $(document).ready(function()
 
 				$creatUser.html('...');
 				$creatTime.html('... um ...');
+
+				$WYSIWYG.val('');
+				CKEDITOR.instances['catCal_WYSIWYG_' + cCID.section_id].setData( '' );
+				CKEDITOR.instances['catCal_WYSIWYG_' + cCID.section_id].updateElement();
+
+
 			});
 
 			$form.on(
@@ -273,6 +327,11 @@ $(document).ready(function()
 
 							$creatUser.html(data.event.createdID);
 							$creatTime.html(data.event.timestampDate + ' um ' + data.event.timestampTime);
+
+							$WYSIWYG.val(data.event.description);
+							CKEDITOR.instances['catCal_WYSIWYG_' + cCID.section_id].setData( data.event.description );
+							CKEDITOR.instances['catCal_WYSIWYG_' + cCID.section_id].updateElement();
+
 
 							$.each( data.event, function(k,v)
 							{
@@ -357,7 +416,7 @@ $(document).ready(function()
 							var $cur	= $(this),
 								cur		= $catEvents.find('.active').data('eventid'),
 								$act	= $catEvents.html(data.events).find('dd[data-eventid=' + cur + ']');
-
+							$cur.addClass('active');
 							$catCals.children('.ccIcons-menu-updown').text( ' ' + $cur.text() );
 
 							// If the element exists in current calendar, add class active, otherwise activate the first element

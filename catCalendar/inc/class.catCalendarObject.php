@@ -273,6 +273,15 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 
 				switch ( $action )
 				{
+					case 'deleteEvent':
+						$success		= $catCalEvent->deleteEvent();
+			
+						$return	= array(
+							'message'	=> CAT_Helper_I18n::getInstance()->translate( 'Event deleted successfully' ),
+							'success'	=> $success ? true : false
+						);
+						break;
+
 					case 'getEvent':
 						$success		=  $catCalEvent->getEvent( true );
 			
@@ -1040,6 +1049,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			self::setParserValue('dates',		self::getAllEvents());
 			self::setParserValue('calendars',	self::getCalendar());
 			self::setParserValue('dates',		self::getAllEvents());
+			self::setParserValue('catCal_WYSIWYG',	'catCal_WYSIWYG_' . self::getSectionID());
 
 			if ( file_exists(  CAT_PATH . '/modules/' . static::$directory . '/modify/' . self::getVariant() . '/modify.php' ) )
 				include(  CAT_PATH . '/modules/' . static::$directory . '/modify/' . self::getVariant() . '/modify.php' );

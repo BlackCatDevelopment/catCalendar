@@ -68,9 +68,9 @@
 
 	<hr>
 
+	{show_wysiwyg_editor($catCal_WYSIWYG,$catCal_WYSIWYG,'','100%','150px')}
 	{*<label for="cC_description_{$section_id}">{translate('Description')}:</label><br>*}
-	<textarea id="cC_description_{$section_id}" type="text" name="description" placeholder="{translate('Description')}" rows="6" cols="80">{if $event.options.description}{$event.options.description}{/if}</textarea><br>
-
+	{*<textarea id="cC_description_{$section_id}" type="text" name="description" placeholder="{translate('Description')}" rows="6" cols="80">{if $event.options.description}{$event.options.description}{/if}</textarea><br>*}
 	<hr>
 
 	<button name="action" id="ButPEvent_{$section_id}" value="publishEvent" class="fc_gradient1 fc_gradient_hover ccIcons-feed right">

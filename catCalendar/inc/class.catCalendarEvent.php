@@ -204,14 +204,13 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 				{
 					if( $key == 'eventURL' && $val == '' ){
 						$val	= self::createTitleURL( self::getProperty('title') );
-}
+					}
 					if( !is_null( $val ) && !in_array($key,self::$staticVars) )
 					{
 						$saveProp[]		.= '`' . trim($key) . '`';
 						$saveVal[$key]	 = "'".$val."'";
 					}
 				}
-
 				if ( CAT_Helper_Page::getInstance()->db()->query(
 					'INSERT INTO `:prefix:mod_catCalendar_events` ' .
 						'( ' . implode(',', $saveProp) . ',`createdID`,`modifiedID`, `UID` ) VALUES ' .
@@ -229,13 +228,15 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 
 				foreach( get_object_vars($this) as $key => $val )
 				{
+					if( $key == 'eventURL' && $val == '' ){
+						$val	= self::createTitleURL( self::getProperty('title') );
+					}
 					if( !is_null( $val ) && !in_array($key,self::$staticVars) )
 					{
 						$saveProp[]		.= '`' . $key . '` = :' . $key . ' ';
 						$saveVal[$key]	 = $val;
 					}
 				}
-
 				if ( CAT_Helper_Page::getInstance()->db()->query(
 					'UPDATE `:prefix:mod_catCalendar_events`' .
 						' SET ' . implode(',', $saveProp) . 
@@ -292,9 +293,15 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		 * @return bool
 		 *
 		 **/
-		public function remove()
+		public function deleteEvent()
 		{
-			// TODO: implement here
+			if ( !$this->getEventID() ) return false;
+			return CAT_Helper_Page::getInstance()->db()->query(
+				'DELETE FROM `:prefix:mod_catCalendar_events` ' .
+					'WHERE `eventID` = :eventID',
+				array(
+					'eventID'	=> $this->getEventID()
+			) );
 		}
 
 /*		public function setOption()
