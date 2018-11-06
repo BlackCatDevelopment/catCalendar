@@ -73,7 +73,7 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		private $modifiedID			= NULL;
 	
 	
-		public function __construct(int $eventID = NULL)
+		public function __construct($eventID = NULL)
 		{
 			if ( $eventID === true )
 			{
@@ -157,7 +157,7 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			$base	= $title;
 
 			$counter	= 0;
-			while ( CAT_Helper_Page::getInstance()->db()->query(
+			while( $checkURL = CAT_Helper_Page::getInstance()->db()->query(
 				'SELECT cCU.`eventURL` FROM `p_bcj_2018_mod_catCalendarURL` cCU ' .
 					'LEFT JOIN `p_bcj_2018_mod_catCalendar_events` cCE ON cCE.`eventID` = cCU.`eventID` ' .
 					'WHERE cCE.`calID` IN ( ' .
@@ -171,7 +171,7 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 					'calID'	=> $this->getProperty('calID'),
 					'title'	=> $title
 				)
-			)->fetch() ) {
+			) && is_object($checkURL) && $checkURL->numRows() > 0 ) {
 				$title	= $base . '-' . ++$counter;
 			}
 
@@ -362,7 +362,7 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		 * @return object/array
 		 *
 		 **/
-		public static function getEventByUrl( string $url = '' )
+		public static function getEventByUrl( $url = '' )
 		{
 			if ($url == '') return false;
 

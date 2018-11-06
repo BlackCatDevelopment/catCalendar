@@ -46,18 +46,18 @@ if (defined('CAT_PATH')) {
 #{
 #	@include dirname(__FILE__) . '/class.catCalendarEvent.php';
 #}
-
-function catCalendarAutoload( $class )
-{
-	$url	= explode('\\',$class);
-	if ( $url[0] == 'Eluceo' )
+if(!function_exists("catCalendarAutoload")) {
+	function catCalendarAutoload( $class )
 	{
-		array_shift($url);
-		require_once dirname(__FILE__) . '/' . implode('/', $url) . '.php';
+		$url	= explode('\\',$class);
+		if ( $url[0] == 'Eluceo' )
+		{
+			array_shift($url);
+			require_once dirname(__FILE__) . '/' . implode('/', $url) . '.php';
+		}
 	}
+	spl_autoload_register('catCalendarAutoload');
 }
-
-spl_autoload_register('catCalendarAutoload');
 
 if ( ! class_exists( 'catCalendarObject', false ) ) {
 
@@ -117,7 +117,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			'ics-public'		=> 1
 		);
 
-		public function __construct( int $section_id = NULL )
+		public function __construct( $section_id = NULL )
 		{
 			if ( $section_id === true )
 			{
@@ -393,7 +393,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		 * @return bool true/false
 		 *
 		 **/
-		public static function setOption( string $name = NULL, string $value = '' )
+		public static function setOption( $name = NULL, $value = '' )
 		{
 			if ( !self::getSectionID()
 				|| !$name
@@ -423,7 +423,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		 * @return array()
 		 *
 		 **/
-		public static function getOption( string $name = NULL )
+		public static function getOption( $name = NULL )
 		{
 			if ( !self::getSectionID() ) return false;
 
@@ -466,7 +466,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		} // end getOptions()
 
 
-		public function addCalender( string $calName = NULL )
+		public function addCalender( $calName = NULL )
 		{
 			if ( !self::getSectionID() ) return false;
 
@@ -581,7 +581,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 		}
 
 		
-		public static function getAllEvents( int $calID = NULL, bool $output = NULL, bool $asc = NULL )
+		public static function getAllEvents( $calID = NULL, $output = NULL, $asc = NULL )
 		{
 			if ( !self::getSectionID() ) return false;
 
@@ -647,7 +647,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 
 
 		
-		public static function getEventsInPeriod( int $from = NULL, int $to = NULL, int $calID = NULL, bool $output = NULL, bool $asc = NULL )
+		public static function getEventsInPeriod( $from = NULL, $to = NULL, $calID = NULL, $output = NULL, $asc = NULL )
 		{
 			if ( !self::getSectionID() ) return false;
 
@@ -767,7 +767,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			else return self::$section_id;
 		}
 	
-		private function setSectionID( int $section_id = NULL )
+		private function setSectionID( $section_id = NULL )
 		{
 			if ( !$section_id ) return false;
 			self::$section_id	= intval( $section_id );
@@ -838,7 +838,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			return $arr;
 		}
 
-		public static function getDaysInYearMonth( int $time = NULL )
+		public static function getDaysInYearMonth( $time = NULL )
 		{
 
 			$time	= is_numeric($time) ? $time : time();
