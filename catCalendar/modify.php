@@ -46,7 +46,43 @@ if (defined('CAT_PATH')) {
 
 require_once( 'inc/class.catCalendarObject.php' );
 
-#include_once "import.php";
+#			$result = $backend->db()->query(
+#				'SELECT cCE.`eventID`, cCE.`eventURL` FROM `p_bcj_2018_mod_catCalendar_events` cCE
+#		LEFT JOIN `p_bcj_2018_mod_catCalendar` cC ON cC.`calID` = cCE.`calID`
+#		WHERE cC.`section_id` = :section_id',
+#				array(
+#					'section_id'	=> 121
+#				)
+#			);
+#			if( $result && $result->rowCount() > 0 )
+#			{
+#				while ( false !== ( $url = $result->fetch() ) )
+#				{
+#					$counter	= 1;
+#					while ( $backend->db()->query(
+#						'SELECT `URL` FROM `p_bcj_2018_mod_catCalendarURL` ' .
+#							'WHERE `URL` = :eventURL',
+#						array(
+#							'eventURL'	=> $url['eventURL']
+#						)
+#					)->fetch() ) {
+#						$url['eventURL'] =  $url['eventURL'] . '-' . $counter++;
+#					}
+#					$backend->db()->query(
+#						'INSERT INTO `p_bcj_2018_mod_catCalendarURL` ' .
+#							'SET URL = :eventURL, eventID = :eventID',
+#						array(
+#							'eventID'	=> $url['eventID'],
+#							'eventURL'	=> $url['eventURL']
+#						)
+#					);
+#				}
+#			}
+			
+
+
+
+
 
 catCalendarObject::modify();
 /*

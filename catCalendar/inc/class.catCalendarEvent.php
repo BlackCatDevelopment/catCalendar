@@ -114,9 +114,9 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		 *
 		 * @access private
 		 * @return integer
-		 *
+1		 *
 		 **/
-		private function getEventID()
+		public function getEventID()
 		{
 			return $this->eventID;
 		}	// getEventID
@@ -128,12 +128,12 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		 * @return integer
 		 *
 		 **/
-		private function geteventURL()
+		private function getEventURL()
 		{
 			if ( !$this->getEventID() ) return false;
 
 			$getURL	= CAT_Helper_Page::getInstance()->db()->query(
-				'SELECT `URL`, `newURL` FROM `:prefix:mod_catCalendarURL` ' .
+				'SELECT `eventURL` FROM `:prefix:mod_catCalendarURL` ' .
 					'WHERE `eventID` = :eventID AND `newURL` = ""',
 				array(
 					'eventID'	=> $this->getEventID()
@@ -143,9 +143,42 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			if( ( isset($getURL) && $getURL->numRows() > 0 )
 				&& !false == ($row = $getURL->fetchRow() ) )
 			{
-				$this->setProperty( 'eventURL', $row['URL']);
+				$this->setProperty( 'eventURL', $row['eventURL']);
 			} else return NULL;
-		}	// geteventURL
+		}	// getEventURL
+
+
+		/**
+		 *
+		 */
+		private function createTitle( $title = 'Neuer Eintrag' )
+		{
+			$title	= $this->createTitleURL( $title );
+			$base	= $title;
+
+			$counter	= 0;
+			while ( CAT_Helper_Page::getInstance()->db()->query(
+				'SELECT cCU.`eventURL` FROM `p_bcj_2018_mod_catCalendarURL` cCU ' .
+					'LEFT JOIN `p_bcj_2018_mod_catCalendar_events` cCE ON cCE.`eventID` = cCU.`eventID` ' .
+					'WHERE cCE.`calID` IN ( ' .
+						'SELECT cC.`calID` FROM `p_bcj_2018_mod_catCalendar` cC ' .
+							'WHERE cC.`section_id` = ( ' .
+								'SELECT cC2.`section_id` FROM `p_bcj_2018_mod_catCalendar` cC2 ' .
+									'WHERE cC2.`calID` = :calID' .
+							') ' .
+					') AND cCU.`eventURL` = :title',
+				array(
+					'calID'	=> $this->getProperty('calID'),
+					'title'	=> $title
+				)
+			)->fetch() ) {
+				$title	= $base . '-' . ++$counter;
+			}
+
+			$this->setProperty( 'eventURL', $title );
+
+			return $title;
+		}
 
 		/**
 		 * Save seo URL to database
@@ -158,21 +191,18 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		{
 			if ( !$this->getEventID() ) return false;
 
-			if ( !$this->geteventURL() )
+			if ( !$this->getEventURL() )
 			{
-				$this->setProperty(
-					'eventURL',
-					self::createTitleURL( $this->getProperty('title') )
-				);
+				$this->createTitle( $this->getProperty('title') );
 				$this->setProperty( 'newURL', '');
 			}
 
 			if ( CAT_Helper_Page::getInstance()->db()->query(
 				'REPLACE `:prefix:mod_catCalendarURL` ' .
-					'SET `eventID` = :eventID, `URL` = :URL, `newURL` = :newURL',
+					'SET `eventID` = :eventID, `eventURL` = :eventURL, `newURL` = :newURL',
 				array(
 					'eventID'	=> $this->getEventID(),
-					'URL'		=> $this->getProperty( 'eventURL' ),
+					'eventURL'	=> $this->getProperty( 'eventURL' ),
 					'newURL'	=> $this->getProperty( 'newURL' )
 				)
 			
@@ -202,24 +232,31 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 
 				foreach( get_object_vars($this) as $key => $val )
 				{
-					if( $key == 'eventURL' && $val == '' ){
-						$val	= self::createTitleURL( self::getProperty('title') );
-					}
-					if( !is_null( $val ) && !in_array($key,self::$staticVars) )
+					if( $key !== 'eventURL' && !is_null( $val ) && !in_array($key,self::$staticVars) )
 					{
 						$saveProp[]		.= '`' . trim($key) . '`';
 						$saveVal[$key]	 = "'".$val."'";
 					}
 				}
+				$uid	= uniqid();
 				if ( CAT_Helper_Page::getInstance()->db()->query(
 					'INSERT INTO `:prefix:mod_catCalendar_events` ' .
 						'( ' . implode(',', $saveProp) . ',`createdID`,`modifiedID`, `UID` ) VALUES ' .
-						'( ' . implode(',', $saveVal) . ', :userID, :userID, :uid )',
+						'( ' . implode(',', $saveVal) . ', :userID, :userID, :uid ); ',
 						array(
 							'userID'	=> CAT_Users::get_user_id(),
-							'uid'		=> uniqid()
+							'uid'		=> $uid
 						)
-				) ) return $this;
+				) )
+				{
+					$this->setProperty('createdID',CAT_Users::get_user_id());
+					$this->setProperty('modifiedID',CAT_Users::get_user_id());
+					$this->setProperty('uid',$uid);
+
+					$this->setEventID( CAT_Helper_Page::getInstance()->db()->query('SELECT LAST_INSERT_ID()')->fetchColumn() );
+					$this->setEventURL();
+					return $this->createReturnArray();
+				}
 				else return false;
 			} elseif ( !$saveOne )
 			{
@@ -228,15 +265,17 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 
 				foreach( get_object_vars($this) as $key => $val )
 				{
-					if( $key == 'eventURL' && $val == '' ){
-						$val	= self::createTitleURL( self::getProperty('title') );
+					if( $key == 'eventURL' ){
+						if ( $val == '' )
+						$val	= $this->createTitle( $this->getProperty('title') );
 					}
-					if( !is_null( $val ) && !in_array($key,self::$staticVars) )
+					else if( !is_null( $val ) && !in_array($key,self::$staticVars) )
 					{
 						$saveProp[]		.= '`' . $key . '` = :' . $key . ' ';
 						$saveVal[$key]	 = $val;
 					}
 				}
+
 				if ( CAT_Helper_Page::getInstance()->db()->query(
 					'UPDATE `:prefix:mod_catCalendar_events`' .
 						' SET ' . implode(',', $saveProp) . 
@@ -328,8 +367,9 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 			if ($url == '') return false;
 
 			$getEvent	= CAT_Helper_Page::getInstance()->db()->query(
-				'SELECT  * FROM `:prefix:mod_catCalendar_events` ' .
-					'WHERE `eventURL` = :url',
+				'SELECT * FROM `:prefix:mod_catCalendar_events` cCE ' .
+					'LEFT JOIN `:prefix:mod_catCalendarURL` cCU ON cCU.`eventID` = cCE.`eventID` ' .
+					'WHERE cCU.`eventURL` = :url',
 				array(
 					'url'	=> $url
 				)
@@ -402,13 +442,13 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 				$this->setProperty( 'start',		$row['start']);
 				$this->setProperty( 'end',			$row['end']);
 				$this->setProperty( 'timestamp',	$row['timestamp']);
-				$this->setProperty( 'eventURL',		$row['eventURL']);
 				$this->setProperty( 'UID',			$row['UID']);
 				$this->setProperty( 'published',	$row['published']);
 				$this->setProperty( 'allday',		$row['allday']);
 				$this->setProperty( 'modified',		$row['modified']);
 				$this->setProperty( 'createdID',	$row['createdID']);
 				$this->setProperty( 'modifiedID',	$row['modifiedID']);
+				$this->getEventURL();
 			}
 
 			if ( $returnArray ) return $this->createReturnArray();
@@ -616,7 +656,6 @@ if ( ! class_exists( 'catCalendarEvent', false ) ) {
 		public static function createTitleURL( $title = NULL )
 		{
 			if ( !$title ) return false;
-
 			return CAT_Helper_Page::getFilename( $title );
 		} // end createTitleURL()
 	}

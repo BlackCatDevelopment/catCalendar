@@ -130,26 +130,19 @@ $(document).ready(function()
 					{
 						// Set activity and store in a vaxsriable to use it later
 						data.process	= set_activity( 'Save event' );
+						console.log(ajaxData);
 					},
 					success:	function( data, textStatus, jqXHR )
 					{
-						$catCals.find('li.active').click();
+						console.log(data, textStatus, jqXHR);
 						if ( data.success === true )
 						{
-							console.log(data.responseText, textStatus, jqXHR);
-							return_success( jqXHR.process , data.message );
-/*							var $cur	= $(this);
-							if ( data.event == 1 )
-							{
-								$cur.addClass('published');
-								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');
-							}
-							else {
-								$cur.removeClass('published');
-								$catEvents.find('dd').removeClass('active').filter($cur).addClass('active');	
-							}
+							// Need to reowrk if an event is added to another calendar it won't be in the list...
+							$catEvents.html(data.list).find('dd[data-eventid=' + data.eventID + ']').click();
 
-							console.log(data);*/
+							$catCals.find('li.active').click();
+
+							return_success( jqXHR.process , data.message );
 						}
 						else {
 							// return error
@@ -248,6 +241,7 @@ $(document).ready(function()
 					{
 						if ( data.success === true )
 						{
+							$catEvents.html(data.list);
 							return_success( jqXHR.process , data.message );
 							$('#addEvent_' + cCID.section_id).click();
 						}
@@ -269,6 +263,7 @@ $(document).ready(function()
 			{
 				e.preventDefault();
 				$form[0].reset();
+				$form.removeData('eventid');
 				cC_checkToggle($form,'allday',$form.find('.cC_ADtoggle'),false);
 				$form.find('input:text, textarea').first().focus();
 				$catEvents.find('dd.active').removeClass('active');
@@ -279,8 +274,6 @@ $(document).ready(function()
 				$WYSIWYG.val('');
 				CKEDITOR.instances['catCal_WYSIWYG_' + cCID.section_id].setData( '' );
 				CKEDITOR.instances['catCal_WYSIWYG_' + cCID.section_id].updateElement();
-
-
 			});
 
 			$form.on(

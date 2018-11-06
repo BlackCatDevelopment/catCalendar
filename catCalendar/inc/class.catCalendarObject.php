@@ -278,6 +278,8 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			
 						$return	= array(
 							'message'	=> CAT_Helper_I18n::getInstance()->translate( 'Event deleted successfully' ),
+							'eventID'	=> $eventID,
+							'list'		=> self::getAllEvents(NULL,true,NULL),
 							'success'	=> $success ? true : false
 						);
 						break;
@@ -287,6 +289,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 			
 						$return	= array(
 							'message'	=> CAT_Helper_I18n::getInstance()->translate( 'Event loaded successfully' ),
+							'eventID'	=> $eventID,
 							'event'		=> $success,
 							'success'	=> is_array($success) && count($success) > 0 ? true : false
 						);
@@ -299,6 +302,7 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 									? CAT_Helper_I18n::getInstance()->translate( 'Event published successfully' )
 									: CAT_Helper_I18n::getInstance()->translate( 'Event unpublished successfully' ),
 							'event'		=> $publish,
+							'eventID'	=> $eventID,
 							'success'	=> !is_null($publish) ? true : false
 						);
 						break;
@@ -333,11 +337,16 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 							}
 						}
 
-						$test	= $catCalEvent->setProperty( 'start', implode(' ', $start) )->setProperty( 'end', implode(' ', $end) )->save();
+						$events	= $catCalEvent
+									->setProperty( 'start', implode(' ', $start) )
+									->setProperty( 'end', implode(' ', $end) )
+									->save();
 
 						$return	= array(
 							'message'	=> CAT_Helper_I18n::getInstance()->translate( 'Event saved successfully!' ),
-							'shit'		=> $test,
+							'event'		=> $events,
+							'eventID'	=> $catCalEvent->getEventID(),
+							'list'		=> self::getAllEvents(NULL,true,NULL ),
 							'success'	=> true
 						);
 			
@@ -582,10 +591,11 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 				$sqlAdd	= '';
 			elseif( is_numeric($calID) )
 				$sqlAdd	= ' = ' . intval( $calID );
-			else $sqlAdd	= 'IN (SELECT `calID` FROM `:prefix:mod_catCalendar` WHERE `section_id` = :secID)';
+			else $sqlAdd	= 'IN (SELECT `calID` FROM `:prefix:mod_catCalendar` WHERE `section_id` = :secID) ';
 
 			$getEvents	= CAT_Helper_Page::getInstance()->db()->query(
-				'SELECT *, day(start) AS sD, month(start) AS sM, year(start) AS sY FROM `:prefix:mod_catCalendar_events` ' .
+				'SELECT *, day(start) AS sD, month(start) AS sM, year(start) AS sY FROM `:prefix:mod_catCalendar_events` cCE ' .
+					'LEFT JOIN `:prefix:mod_catCalendarURL` cCU ON cCU.`eventID` = cCE.`eventID` ' .
 					'WHERE `calID` ' . 
 					$sqlAdd .
 					' ORDER BY year(start) DESC, month(start) DESC, day(start) ' . ($asc ? 'ASC' : 'DESC'),
@@ -645,10 +655,11 @@ if ( ! class_exists( 'catCalendarObject', false ) ) {
 				$sqlAdd	= '';
 			elseif( is_numeric($calID) )
 				$sqlAdd	= ' = ' . intval( $calID );
-			else $sqlAdd	= 'IN (SELECT `calID` FROM `:prefix:mod_catCalendar` WHERE `section_id` = :secID)';
+			else $sqlAdd	= 'IN (SELECT `calID` FROM `:prefix:mod_catCalendar` WHERE `section_id` = :secID) ';
 
 			$getEvents	= CAT_Helper_Page::getInstance()->db()->query(
-				'SELECT *, day(start) AS sD, month(start) AS sM, year(start) AS sY FROM `:prefix:mod_catCalendar_events` ' .
+				'SELECT *, day(start) AS sD, month(start) AS sM, year(start) AS sY FROM `:prefix:mod_catCalendar_events` cCE ' .
+					'LEFT JOIN `:prefix:mod_catCalendarURL` cCU ON  cCU.`eventID` = cCE.`eventID` ' .
 					'WHERE `calID` ' . 
 					$sqlAdd .
 					' AND ( `start` BETWEEN FROM_UNIXTIME(:from) AND FROM_UNIXTIME(:to) ' .

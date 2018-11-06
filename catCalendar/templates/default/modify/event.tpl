@@ -39,13 +39,13 @@
 	<input id="cC_place_{$section_id}" type="text" name="location" value="{if $event.options.place}{$event.options.place}{/if}" placeholder="{translate('Place')}">
 
 	<label for="cC_eventURL_{$section_id}">{translate('SEO URL')}:</label>
-	<input id="cC_eventURL_{$section_id}" type="text" name="eventURL" value="{if $event.options.eventURL}{$event.options.eventURL}{/if}" placeholder="{translate('Will be automatically set on first save')}.">
+	<input id="cC_eventURL_{$section_id}" type="text" name="eventURL" value="{if $event.options.eventURL}{$event.options.eventURL}{/if}" placeholder="{translate('Will be automatically set on first save')}." readonly="readonly">
 
 
 	<hr>
 
 	<label for="cC_allday_{$section_id}" class="label80">{translate('All day')}:</label>
-	<input id="cC_allday_{$section_id}" type="checkbox" name="allday"{if $event.options.allday} checked="checked"{/if} class="input_25p"><br>
+	<input id="cC_allday_{$section_id}" type="checkbox" name="allday"{if $event.options.allday} checked="checked"{/if} class="input_25p" value="1"><br>
 
 	<label for="cC_start_date_{$section_id}" class="label80">{translate('From')}:</label>
 	<input id="cC_start_date_{$section_id}" type="date" name="start_date" value="{if $event.options.start_date}{$event.options.start_date}{/if}" placeholder="{translate('from date')}" class="input_25p">
